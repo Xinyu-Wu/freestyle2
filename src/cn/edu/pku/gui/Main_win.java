@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package cn.edu.pku.gui;
+import FProject.FProject;
 import FeatureEdit.FeatureSelection;
 import com.sun.prism.paint.Color;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -28,6 +29,7 @@ public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
     private Style originStyle=null;
+    public FProject mFProject=null;
     
     /**
      * Creates new form Main_win
@@ -35,6 +37,8 @@ public class Main_win extends javax.swing.JFrame {
     public Main_win() {
         initComponents();
         this.setTitle("Freestyle");
+        this.setLocationRelativeTo(null);
+        
         FeatureEdit.FeatureSelection fs=new FeatureSelection();
         System.out.println("works!");
         this.jButton15.addActionListener(e -> jMapPane3.setCursorTool(
@@ -263,9 +267,9 @@ public class Main_win extends javax.swing.JFrame {
         Project.setText("Project");
 
         New.setText("New Project");
-        New.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                NewMousePressed(evt);
+        New.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CreateFProjectActionPerformed(evt);
             }
         });
         Project.add(New);
@@ -330,12 +334,6 @@ public class Main_win extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void NewMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NewMousePressed
-        // TODO add your handling code here: 
-        New a = new New(Main_win.this); 
-        a.setVisible(true);
-    }//GEN-LAST:event_NewMousePressed
     
     // 放大
     private void ZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomInActionPerformed
@@ -366,6 +364,7 @@ public class Main_win extends javax.swing.JFrame {
     private void PanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PanActionPerformed
         PanTool panTool1=new PanTool();
         jMapPane3.setCursorTool(panTool1);
+        System.out.println(this.mFProject.getFName());
     }//GEN-LAST:event_PanActionPerformed
 
     //要素选择
@@ -387,6 +386,11 @@ public class Main_win extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_SelectionActionPerformed
+
+    private void CreateFProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFProjectActionPerformed
+        // TODO add your handling code here:
+        CreateFProject cfp=new CreateFProject(this);
+    }//GEN-LAST:event_CreateFProjectActionPerformed
     
     /**
      * @param args the command line arguments

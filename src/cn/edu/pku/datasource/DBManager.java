@@ -229,6 +229,7 @@ public class DBManager {
         dm=manager.connetToPostgre(host, port, database, user, pwd);
         try {
             stmt =dm.createStatement();
+<<<<<<< HEAD
             String sql_exist="SELECT datname FROM pg_database WHERE datname= '"+fp_name+"'";
             ResultSet rs=stmt.executeQuery(sql_exist);
             if(rs.next()){
@@ -237,6 +238,8 @@ public class DBManager {
                 dm.close();
                 return;
             }
+=======
+>>>>>>> efdbe914f9472d5fb625aa687e5f85eb914ebae1
             String sql="CREATE DATABASE "+fp_name;
             stmt.executeUpdate(sql);
             stmt.close();
@@ -260,8 +263,11 @@ public class DBManager {
             System.out.println("Table layers and blanklayer created successfully");
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+<<<<<<< HEAD
         } finally{
             
+=======
+>>>>>>> efdbe914f9472d5fb625aa687e5f85eb914ebae1
         }
         
     }
@@ -416,6 +422,9 @@ public class DBManager {
 //dbm.newBlankLayer("fp1", "blanklayer", "location");
 //dbm.deleteLayer("fp1", "layer1");
 //dbm.setLayerLock("fp1", "layer1", null);
+<<<<<<< HEAD
 dbm.addProject("fp1", "yl", "path");
+=======
+>>>>>>> efdbe914f9472d5fb625aa687e5f85eb914ebae1
     }
 }

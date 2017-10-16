@@ -16,8 +16,8 @@ public class Freestyle {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-         Main_win mainwin = new Main_win();
-         mainwin.setVisible(true);
+         FLogin fLogin=new FLogin();
+         fLogin.setVisible(true);
     }
     
 }

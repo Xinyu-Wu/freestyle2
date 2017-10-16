@@ -34,7 +34,7 @@ public class Main_win extends javax.swing.JFrame {
      */
     public Main_win() {
         initComponents();
-        this.setTitle("**.prj - Freestyle");
+        this.setTitle("Freestyle");
         FeatureEdit.FeatureSelection fs=new FeatureSelection();
         System.out.println("works!");
         this.jButton15.addActionListener(e -> jMapPane3.setCursorTool(
@@ -420,7 +420,6 @@ public class Main_win extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Main_win().setVisible(true);
-                
             }
         });
     }

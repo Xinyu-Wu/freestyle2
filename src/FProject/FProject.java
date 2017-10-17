@@ -25,7 +25,7 @@ import org.geotools.swing.data.JFileDataStoreChooser;
 public class FProject {
     private String FName;//工程名
     //private int FLayerNum;//图层数
-    private List<String> FLayerID;//图层索引列表
+    private List<String> FLayers;//图层名称列表
     //private MapContent FMapContent;//图层类
 
     //public MapContent getFMapContent() {
@@ -41,16 +41,16 @@ public class FProject {
         this.FName = FName;
     }   
 
-    public void setFLayerID(List<String> FLayerID) {
-        this.FLayerID = FLayerID;
+    public void setFLayerID(List<String> FLayers) {
+        this.FLayers = FLayers;
     }
 
     public int getFLayerNum() {
-        return FLayerID.size();
+        return FLayers.size();
     }
 
-    public List<String> getFLayerID() {
-        return FLayerID;
+    public List<String> getFLayers() {
+        return FLayers;
     }
     
     public String getFName()
@@ -68,13 +68,13 @@ public class FProject {
     
      public FProject(){
         FName="";
-        FLayerID= new ArrayList<>();
+        FLayers= new ArrayList<>();
         //FMapContent=new MapContent();
     }
     
     public FProject(String name){
         FName=name;
-        FLayerID= new ArrayList<>();
+        FLayers= new ArrayList<>();
        // FMapContent=new MapContent();
     }
       
@@ -113,27 +113,27 @@ public class FProject {
         return bool;    
     }
     
-    public void addLayer(String id, Layer mLayer){//先把图层存进数据库，再把数据库id作为参数传入
-        FLayerID.add(id);
+    public void addLayer(String name){//先把图层存进数据库，再把数据库id作为参数传入
+        FLayers.add(name);
         //FMapContent.addLayer(mLayer);
     }
     
     public void deleteLayer(int index){//先获取要删除图层的id，作为参数传入
    
-        FLayerID.remove(index);
+        FLayers.remove(index);
         //FMapContent.layers().remove(index);
     }
       
     public void moveLayer(int sourcePos, int desPos){//移动图层顺序
-        String id=FLayerID.get(sourcePos);
-        FLayerID.remove(id);
+        String name=FLayers.get(sourcePos);
+        FLayers.remove(name);
         if(sourcePos>desPos)
         {
-            FLayerID.add(desPos, id);
+            FLayers.add(desPos, name);
         }
         else
         {
-            FLayerID.add(desPos-1,id);
+            FLayers.add(desPos-1,name);
         }
        //FMapContent.moveLayer(sourcePos, desPos);
     }

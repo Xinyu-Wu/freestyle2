@@ -5,6 +5,7 @@
  */
 package cn.edu.pku.datasource;
 
+import FProject.FProject;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,6 +35,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import cn.edu.pku.gui.Main_win;
+import org.geotools.swing.JMapPane;
 
 /***
  * @Target(ElementType.TYPE)
@@ -123,36 +125,25 @@ public class ShapefileManager {
     }
     
     //read test case
-    public void readShpTest(Main_win mw){
+    public void readShpTest(JMapPane mapPane,FProject fp){
         try {
-            File file = JFileDataStoreChooser.showOpenFile("shp", null);
+          File file = JFileDataStoreChooser.showOpenFile("shp", null);
             SimpleFeatureSource sfs = this.readShpFromFile(file);
-            SimpleFeatureIterator iterator = sfs.getFeatures().features();
-            
-//            while (iterator.hasNext()){
-//                SimpleFeature feature = iterator.next();
-//                Iterator<Property> pro = feature.getProperties().iterator();
-//                
-//                while (pro.hasNext())
-//                    System.out.println(pro.next().toString());
-//                iterator.close();
-//            }
-//------------------------------------------------------------------------------
-            // Create a map content and add our shapefile to it
-            MapContent map = new MapContent();
-            map.setTitle("Quickstart");
-        
+            SimpleFeatureIterator iterator = sfs.getFeatures().features();    
             Style style = SLD.createSimpleStyle(sfs.getSchema());
             Layer layer = new FeatureLayer(sfs, style);
-            map.addLayer(layer);
-
-            //Transfer value
-            mainwin=mw;
-            mainwin.setJMapPane(map);
-            
-            // Now display the map
-            //JMapFrame.showMap(map);
-//------------------------------------------------------------------------------
+            //----------------------------------------------
+            if(mapPane.getMapContent()!=null){
+                mapPane.getMapContent().addLayer(layer);
+                fp.addLayer(layer.getTitle());
+                mapPane.repaint();
+            }
+            else{
+                MapContent newMapContent=new MapContent();
+                newMapContent.addLayer(layer);
+                fp.addLayer(layer.getTitle());
+                mapPane.setMapContent(newMapContent);
+            }            
             
         } catch (IOException ex) {
             Logger.getLogger(ShapefileManager.class.getName()).log(Level.SEVERE, null, ex);

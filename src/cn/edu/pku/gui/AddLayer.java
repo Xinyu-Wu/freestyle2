@@ -5,8 +5,6 @@
  */
 package cn.edu.pku.gui;
 import javax.swing.ButtonGroup;
-import org.geotools.map.MapContent;
-import org.geotools.swing.JMapPane;
 
 /**
  *
@@ -14,13 +12,11 @@ import org.geotools.swing.JMapPane;
  */
 public class AddLayer extends javax.swing.JFrame {
     public static Main_win mainwin =null; 
-    public static JMapPane mapPane=null;
     /**
      * Creates new form AddLayer
      */
-    public AddLayer(Main_win mw,JMapPane mp) {
+    public AddLayer(Main_win mw) {
         mainwin=mw;
-        mapPane=mp;
         initComponents();
         ButtonGroup buttonGroup1 = new ButtonGroup();
         buttonGroup1.add(jRadioButton1);
@@ -102,7 +98,7 @@ public class AddLayer extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         if (this.jRadioButton1.isSelected()){
-            Add_layer add_layer = new Add_layer(mainwin,mapPane); 
+            Add_layer add_layer = new Add_layer(mainwin); 
             add_layer.setVisible(true);
             this.dispose();
         }
@@ -147,7 +143,7 @@ public class AddLayer extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddLayer(mainwin,mapPane).setVisible(true);
+                new AddLayer(mainwin).setVisible(true);
             }
         });
     }

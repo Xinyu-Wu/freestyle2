@@ -21,8 +21,6 @@ import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
-import org.geotools.swing.JMapPane;
-import org.geotools.swing.MapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
 
 /**
@@ -32,13 +30,11 @@ import org.geotools.swing.data.JFileDataStoreChooser;
 public class Add_layer extends javax.swing.JFrame {
     ShapefileManager sm =new ShapefileManager();
     public static Main_win mainwin =null; 
-    public static JMapPane mapPane =null;
     /**
      * Creates new form Add_layer
      */
-    public Add_layer(Main_win mw,JMapPane mp) {
+    public Add_layer(Main_win mw) {
         mainwin=mw;
-        mapPane=mp;
         initComponents();
         this.setTitle("Add layer"); 
     }
@@ -197,7 +193,7 @@ public class Add_layer extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        sm.readShpTest(mapPane);
+        sm.readShpTest(mainwin);
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -292,7 +288,7 @@ public class Add_layer extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Add_layer(mainwin,mapPane).setVisible(true);
+                new Add_layer(mainwin).setVisible(true);
             }
         });
     }

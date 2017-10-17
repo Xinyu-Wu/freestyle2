@@ -5,6 +5,7 @@
  */
 package cn.edu.pku.datasource;
 
+import FProject.FProject;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -124,7 +125,7 @@ public class ShapefileManager {
     }
     
     //read test case
-    public void readShpTest(JMapPane mapPane){
+    public void readShpTest(JMapPane mapPane,FProject fp){
         try {
           File file = JFileDataStoreChooser.showOpenFile("shp", null);
             SimpleFeatureSource sfs = this.readShpFromFile(file);
@@ -134,11 +135,13 @@ public class ShapefileManager {
             //----------------------------------------------
             if(mapPane.getMapContent()!=null){
                 mapPane.getMapContent().addLayer(layer);
+                fp.addLayer(layer.getTitle());
                 mapPane.repaint();
             }
             else{
                 MapContent newMapContent=new MapContent();
                 newMapContent.addLayer(layer);
+                fp.addLayer(layer.getTitle());
                 mapPane.setMapContent(newMapContent);
             }            
             

@@ -4,10 +4,16 @@
  * and open the template in the editor.
  */
 package cn.edu.pku.gui;
-import FProject.FProject;
 import FeatureEdit.FeatureSelection;
 import com.sun.prism.paint.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -29,16 +35,13 @@ public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
     private Style originStyle=null;
-    public FProject mFProject=null;
     
     /**
      * Creates new form Main_win
      */
     public Main_win() {
         initComponents();
-        this.setTitle("Freestyle");
-        this.setLocationRelativeTo(null);
-        
+        this.setTitle("**.prj - Freestyle");
         FeatureEdit.FeatureSelection fs=new FeatureSelection();
         System.out.println("works!");
         this.jButton15.addActionListener(e -> jMapPane3.setCursorTool(
@@ -58,7 +61,21 @@ public class Main_win extends javax.swing.JFrame {
                         }                        
                     }
                 }));
+        
+        jMapPane3.setBackground(java.awt.Color.white);
+        this.start = new Point(0, 0);
+        this.end = new Point(0, 0);
+        this.linestart = new Point(0, 0);
+        this.lineend = new Point(0, 0);
+        this.temp = new Point(0, 0);
+        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(),  BufferedImage.TYPE_INT_ARGB);
+        if(cache!=null) { //把上个缓存的内容画到新缓存上
+        //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
+        newCache.createGraphics().drawImage(cache, 0, 0, null);
+        }
+        cache = newCache; //交替缓存
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -201,6 +218,20 @@ public class Main_win extends javax.swing.JFrame {
         mapLayerTable1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         mapLayerTable1.setMapPane(jMapPane3);
 
+        jMapPane3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                jMapPane3MouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jMapPane3MouseMoved(evt);
+            }
+        });
+        jMapPane3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMapPane3MouseClicked(evt);
+            }
+        });
+
         jScrollBar2.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
 
         javax.swing.GroupLayout jMapPane3Layout = new javax.swing.GroupLayout(jMapPane3);
@@ -267,9 +298,9 @@ public class Main_win extends javax.swing.JFrame {
         Project.setText("Project");
 
         New.setText("New Project");
-        New.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                CreateFProjectActionPerformed(evt);
+        New.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                NewMousePressed(evt);
             }
         });
         Project.add(New);
@@ -334,6 +365,12 @@ public class Main_win extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void NewMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NewMousePressed
+        // TODO add your handling code here: 
+        New a = new New(Main_win.this); 
+        a.setVisible(true);
+    }//GEN-LAST:event_NewMousePressed
     
     // 放大
     private void ZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomInActionPerformed
@@ -343,7 +380,7 @@ public class Main_win extends javax.swing.JFrame {
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // TODO add your handling code here:
-        AddLayer als = new AddLayer(Main_win.this);
+        AddLayer als = new AddLayer(Main_win.this,jMapPane3);
         als.setVisible(true);
         jMapPane3.getMapContent();
     }//GEN-LAST:event_jButton11ActionPerformed
@@ -364,7 +401,6 @@ public class Main_win extends javax.swing.JFrame {
     private void PanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PanActionPerformed
         PanTool panTool1=new PanTool();
         jMapPane3.setCursorTool(panTool1);
-        System.out.println(this.mFProject.getFName());
     }//GEN-LAST:event_PanActionPerformed
 
     //要素选择
@@ -387,10 +423,53 @@ public class Main_win extends javax.swing.JFrame {
         
     }//GEN-LAST:event_SelectionActionPerformed
 
-    private void CreateFProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFProjectActionPerformed
+    private void jMapPane3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseClicked
         // TODO add your handling code here:
-        CreateFProject cfp=new CreateFProject(this);
-    }//GEN-LAST:event_CreateFProjectActionPerformed
+    }//GEN-LAST:event_jMapPane3MouseClicked
+Point start;
+Point end;
+Point temp;
+int which;
+Point linestart;
+Point lineend;
+BufferedImage cache;
+    private void jMapPane3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseDragged
+        // TODO add your handling code here:
+setBackground(java.awt.Color.white);
+linestart.setLocation(lineend);
+temp.setLocation(end);
+end.setLocation(evt.getPoint());
+lineend.setLocation(evt.getPoint());
+if(cache!=null) {
+Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
+g.setColor(java.awt.Color.WHITE);
+g.drawLine((int)start.getX(), (int)start.getY(), (int)temp.getX(), (int)temp.getY());
+g.setColor(java.awt.Color.RED);
+g.drawLine((int)start.getX(), (int)start.getY(), (int)end.getX(), (int)end.getY());
+
+//-----------------------------------------------------------------------
+Graphics g_orig=jMapPane3.getGraphics();
+//g_orig.clearRect(0, 0, getWidth(), getHeight());
+//g_orig.drawImage(cache, 0, 0, null);
+ReferencedEnvelope mapArea=jMapPane3.getMapContent().getMaxBounds();
+Rectangle rectangle=new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+jMapPane3.getRenderer().paint((Graphics2D)g, rectangle, mapArea);
+g_orig.clearRect(0, 0, getWidth(), getHeight());
+g_orig.drawImage(cache, 0, 0, null);
+//jMapPane3.repaint();
+}
+    }//GEN-LAST:event_jMapPane3MouseDragged
+
+    private void jMapPane3MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseMoved
+        // TODO add your handling code here
+
+start.setLocation(evt.getPoint());
+end.setLocation(evt.getPoint());
+linestart.x=(evt.getX());
+linestart.y=(evt.getY());
+lineend.x=(evt.getX());
+lineend.y=(evt.getY());
+    }//GEN-LAST:event_jMapPane3MouseMoved
     
     /**
      * @param args the command line arguments
@@ -424,6 +503,7 @@ public class Main_win extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Main_win().setVisible(true);
+                
             }
         });
     }

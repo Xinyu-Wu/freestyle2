@@ -46,6 +46,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -385,6 +386,136 @@ public class SimpleFeatureManager {
         }
     }
 
+    private static Object getFeatureFieldDefaultValue(Class fieldClass) {
+        if (fieldClass == int.class) {
+            return 0;
+        } else if (fieldClass == float.class) {
+            return 0f;
+        } else if (fieldClass == double.class) {
+            return 0d;
+        } else if (fieldClass == String.class) {
+            return "0";
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * 将几何要素添加到要素源（默认值）
+     *
+     * @param sTargetFeatureSource
+     * @param sTargetGeometry
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws java.io.IOException
+     */
+    public static boolean addGeometryToFeatureSource(SimpleFeatureSource sTargetFeatureSource, Geometry sTargetGeometry) throws InstantiationException, IllegalAccessException, IOException {
+        //检查shp与geometry是否同类型
+        Class featureSourceClass = sTargetFeatureSource.getFeatures().getSchema().getType(0).getBinding();
+        Class geometryClass = sTargetGeometry.getClass();
+        if (featureSourceClass.equals(geometryClass) == false) {
+            return false;
+        }
+        //构建要素
+        final SimpleFeatureType type = getSimpleFeatureType(sTargetFeatureSource);
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
+        featureBuilder.add(sTargetGeometry);
+        HashMap<String, Class> sFieldDefinition = getSimpleFeatureFields(sTargetFeatureSource);
+        for (Map.Entry<String, Class> entry : sFieldDefinition.entrySet()) {
+            if (entry.getValue() != featureSourceClass) {
+                featureBuilder.set(entry.getKey(), getFeatureFieldDefaultValue(entry.getValue())); // 写入属性值
+            }
+        }
+        SimpleFeature simpleFeature = featureBuilder.buildFeature(null);
+        //构建事务，添加要素
+        Transaction transaction = new DefaultTransaction("Append");
+        DefaultFeatureCollection collection = new DefaultFeatureCollection();
+        collection.add(simpleFeature);
+        try {
+            if (sTargetFeatureSource instanceof SimpleFeatureStore) {
+                SimpleFeatureStore featureStore = (SimpleFeatureStore) sTargetFeatureSource;
+                featureStore.setTransaction(transaction);
+                try {
+                    featureStore.addFeatures(collection);
+                    transaction.commit();
+                } catch (Exception problem) {
+                    problem.printStackTrace();
+                    transaction.rollback();
+                } finally {
+                    transaction.close();
+                }
+            } else {
+                System.out.println(sTargetFeatureSource.getSchema().toString() + " does not support read/write access");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 将几何图形添加到图层中
+     *
+     * @param layer
+     * @param sTargetGeometries
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws IOException
+     */
+    public static boolean addGeometriesToLayer(Layer layer, Geometry[] sTargetGeometries) throws IllegalAccessException, InstantiationException, IOException {
+        //准备参数
+        int sGeometryCout = sTargetGeometries.length;
+        SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
+        Class featureSourceClass = featureSource.getFeatures().getSchema().getType(0).getBinding();
+        final SimpleFeatureType type = getSimpleFeatureType(featureSource);
+        DefaultFeatureCollection collection = new DefaultFeatureCollection();
+        for (int i = 0; i < sGeometryCout; i++) {
+            //检查shp与geometry是否同类型
+            Class geometryClass = sTargetGeometries[i].getClass();
+            if (featureSourceClass.equals(geometryClass) == false) {
+                return false;
+            }
+            //构建要素
+            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
+            featureBuilder.add(sTargetGeometries[i]);
+            HashMap<String, Class> sFieldDefinition = getSimpleFeatureFields(featureSource);
+            for (Map.Entry<String, Class> entry : sFieldDefinition.entrySet()) {
+                if (entry.getValue() != featureSourceClass) {
+                    featureBuilder.set(entry.getKey(), getFeatureFieldDefaultValue(entry.getValue())); // 写入属性值
+                }
+            }
+            SimpleFeature simpleFeature = featureBuilder.buildFeature(null);
+            collection.add(simpleFeature);
+        }
+
+        //构建事务，添加要素
+        Transaction transaction = new DefaultTransaction("Append");
+        try {
+            if (featureSource instanceof SimpleFeatureStore) {
+                SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+                featureStore.setTransaction(transaction);
+                try {
+                    featureStore.addFeatures(collection);
+                    transaction.commit();
+                } catch (Exception problem) {
+                    problem.printStackTrace();
+                    transaction.rollback();
+                } finally {
+                    transaction.close();
+                }
+            } else {
+                System.out.println(featureSource.getSchema().toString() + " does not support read/write access");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     /**
      * 将要素添加至目标源
      *
@@ -614,6 +745,7 @@ public class SimpleFeatureManager {
 
     /**
      * 将要素源转换为JsonArray
+     *
      * @param sFeatureSource
      * @return
      * @throws IOException
@@ -635,10 +767,12 @@ public class SimpleFeatureManager {
                     if (feature.getAttribute(i) == null) {
                         if (sClass == String.class) {
                             sValue = "";
+                        } else {
+                            sValue = "0";
                         }
-                        else sValue="0";
+                    } else {
+                        sValue = feature.getAttribute(i).toString();
                     }
-                    else sValue=feature.getAttribute(i).toString();
                     jObject.put(sType.getType(i).getName().toString(), sValue);
                 }
                 sJsonArray.add(jObject);
@@ -652,11 +786,11 @@ public class SimpleFeatureManager {
 
     /**
      * 将要素源的字段类型转换为JsonObject
+     *
      * @param sFeatureSource
      * @return
      */
-    public static JSONObject convertFeaturesFieldsToJSONObject(SimpleFeatureSource sFeatureSource)
-    {
+    public static JSONObject convertFeaturesFieldsToJSONObject(SimpleFeatureSource sFeatureSource) {
         JSONObject jObject = new JSONObject();
         SimpleFeatureType sType = sFeatureSource.getSchema();
         int attrCount = sType.getAttributeCount();
@@ -665,11 +799,14 @@ public class SimpleFeatureManager {
         }
         return jObject;
     }
+
     //调试时主函数
     public static void main(String[] args) throws Exception {
+
+        double latitude = Double.parseDouble("120");
+        double longitude = Double.parseDouble("40");
+        Point testPoint = createOnePoint(latitude, longitude);
         /*
-        double latitude = Double.parseDouble("116.123234255");
-        double longitude = Double.parseDouble("39.12051");
         String POIID = "139";
         String MESHID = "3";
         String OWNER = "cy";
@@ -689,14 +826,17 @@ public class SimpleFeatureManager {
         File newFile = new File("F:\\ArcGISDoc\\suzhou\\test.shp");
         FileDataStore store = FileDataStoreFinder.getDataStore(newFile);
         SimpleFeatureSource featureSource = store.getFeatureSource();
+        Class featureSourceClass = featureSource.getFeatures().getSchema().getType(0).getBinding();
+        Class geometryClass = testPoint.getClass();
         //SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;  
         try {
             //之前的测试
             //System.out.println(addGeometryToFeatureSource(featureSource, testPoint, fieldValue));
+            addGeometryToFeatureSource(featureSource, testPoint);
             //测试convertFeaturesToJSONArray函数
             JSONObject jObject = new JSONObject();
-                //jObject.put("Features",convertFeaturesToJSONArray(featureSource));
-                jObject=convertFeaturesFieldsToJSONObject(featureSource);
+            //jObject.put("Features",convertFeaturesToJSONArray(featureSource));
+            jObject = convertFeaturesFieldsToJSONObject(featureSource);
             System.out.println(jObject);
         } catch (Exception e) {
             e.printStackTrace();

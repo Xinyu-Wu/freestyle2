@@ -98,6 +98,15 @@ public class DBManager {
         dm=manager.connetToPostgre(host, port, database, user, pwd);
         try {
             stmt =dm.createStatement();
+            String sql_exist="SELECT * FROM userinfo WHERE userid= '"+userid+"'";
+            ResultSet rs=stmt.executeQuery(sql_exist);
+            if(rs.next()){
+                System.out.println(userid+" already exists. Add "+userid+" failed.");
+                stmt.close();
+                dm.close();
+                return;
+            }
+            
             String sql = "INSERT INTO userinfo(userid,password)" +
                       "VALUES ('"+userid+"','"+password+"' );";
             stmt.executeUpdate(sql);
@@ -120,6 +129,15 @@ public class DBManager {
         dm=manager.connetToPostgre(host, port, database, user, pwd);
         try {
             stmt =dm.createStatement();
+            String sql_exist="SELECT * FROM projectuser WHERE fp_name= '"+fp_name+"' AND userid= '"+userid+"'";
+            ResultSet rs=stmt.executeQuery(sql_exist);
+            if(rs.next()){
+                System.out.println("This record already exists. Add this record failed.");
+                stmt.close();
+                dm.close();
+                return;
+            }
+            
             String sql = "INSERT INTO projectuser(fp_name,userid)" +
                       "VALUES ('"+fp_name+"','"+userid+"');";
             stmt.executeUpdate(sql);
@@ -200,12 +218,14 @@ public class DBManager {
         try {
             stmt =dm.createStatement();
             String sql_exist="SELECT * FROM projects Where fp_name='"+fp_name+"'";
-            ResultSet rs=null;
-            rs=stmt.executeQuery(sql_exist);
+            ResultSet rs=stmt.executeQuery(sql_exist);
             if (rs.next()) {
                 System.out.println("Error: "+fp_name+" has already been inserted.There is no need to insert again.");
+                stmt.close();
+                dm.close();
                 return;
             } 
+            
             String sql = "INSERT INTO projects(fp_name,ownerid,indexpath)" +
                       " VALUES ('"+fp_name+"','"+ownerid+"','"+indexpath+"');";
             stmt.executeUpdate(sql);
@@ -258,7 +278,7 @@ public class DBManager {
             stmt.executeUpdate(create_blanklayer);
             stmt.close();
             dm.close();
-            System.out.println("Table layers and blanklayer created successfully");
+            System.out.println("Layers and blanklayer created successfully");
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -280,6 +300,15 @@ public class DBManager {
         dm=manager.connetToPostgre(host, port, fp_name, user, pwd);
         try {
             stmt =dm.createStatement();
+            String sql_exist="SELECT * FROM layers WHERE layer_name= '"+layer_name+"'";
+            ResultSet rs=stmt.executeQuery(sql_exist);
+            if(rs.next()){
+                System.out.println(layer_name+" already exists. Add "+layer_name+" failed.");
+                stmt.close();
+                dm.close();
+                return;
+            }
+            
             String sql = "INSERT INTO layers(layer_name,simplefeaturetype,lockstatus)" +
                       " VALUES ('"+layer_name+"','"+simplefeaturetype+"','"+lockstatus+"');";
             stmt.executeUpdate(sql);
@@ -303,6 +332,15 @@ public class DBManager {
         dm=manager.connetToPostgre(host, port, fp_name, user, pwd);
         try {
             stmt =dm.createStatement();
+            String sql_exist="SELECT * FROM blanklayer WHERE layer_name= '"+layer_name+"'";
+            ResultSet rs=stmt.executeQuery(sql_exist);
+            if(rs.next()){
+                System.out.println(layer_name+" already exists. Add "+layer_name+" failed.");
+                stmt.close();
+                dm.close();
+                return;
+            }
+            
             String sql = "INSERT INTO blanklayer(layer_name,simplefeaturetype)" +
                       " VALUES ('"+layer_name+"','"+simplefeaturetype+"');";
             stmt.executeUpdate(sql);
@@ -392,14 +430,14 @@ public class DBManager {
         String pwd = "123";
         DBManager dbm=new DBManager(host,port,database,user,pwd);
         
-        //dbm.signup("yangliu", "123");
+//        dbm.signup("yangliu", "123");
         
         //boolean flag=dbm.verifyLogin("yangliu", "123");
         //System.out.println(flag);
         
         //dbm.addProject("fp1", "yangliu", "c:/");
 
-//        dbm.inviteProjectUser("fp1", "yangliu");
+        dbm.inviteProjectUser("fp1", "yangliu");
 //        dbm.inviteProjectUser("fp2", "yangliu");
 //        dbm.inviteProjectUser("fp2", "yl");
 
@@ -409,7 +447,7 @@ public class DBManager {
 //        System.out.println(projectList);
 
 //        dbm.addProject("fp1", "yangliu", "c:/");
-//          dbm.insertProjectRecord("fp2", "yangliu", "c:/");
+//          dbm.insertProjectRecord("fp1", "yangliu", "c:/");
 //          dbm.addProject("fp2", "yangliu", "c:/");
 //dbm.addLayers("fp1", "layer1", "location", "yangliu");
 //String status=dbm.checkLayerLock("fp1", "layer1");

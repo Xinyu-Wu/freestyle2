@@ -8,12 +8,15 @@ package FMessage;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONObject;
+import cn.edu.pku.datasource.SimpleFeatureManager;
+import java.io.IOException;
 /**
  * 传输信息类
  *
  * @author sq
  */
 import java.util.Iterator;
+import org.geotools.data.simple.SimpleFeatureSource;
 
 public class TransmittedMessage {
 
@@ -25,6 +28,7 @@ public class TransmittedMessage {
     private FOperationCode Code;
     private FOperationStatus Status;
     private HashMap<String, Object> Data;
+    private HashMap<String, Class> DataType;
 
     public TransmittedMessage() {
 
@@ -41,6 +45,7 @@ public class TransmittedMessage {
      * @param code 指令代码
      * @param status 指令状态
      * @param data 传输的数据
+     * @param dataType 数据类型
      */
     public TransmittedMessage(
             String sender,
@@ -50,7 +55,8 @@ public class TransmittedMessage {
             String messageId,
             FOperationCode code,
             FOperationStatus status,
-            HashMap<String, Object> data
+            HashMap<String, Object> data,
+            HashMap<String, Class> dataType
     ) {
         this.Sender = sender;
         this.Receiver = receiver;
@@ -60,6 +66,7 @@ public class TransmittedMessage {
         this.Code = code;
         this.Status = status;
         this.Data = data;
+        this.DataType=dataType;
     }
     
     /**
@@ -133,13 +140,18 @@ public class TransmittedMessage {
     {
         return this.Data;
     }
+    
+    public HashMap<String,Class> getDataType()
+    {
+        return this.DataType;
+    }
 
     /**
      * 将要传输消息转为Json格式
      *
      * @return
      */
-    public JSONObject convertMessageToJson() {
+    public JSONObject convertMessageToJson() throws IOException {
         JSONObject jObject = new JSONObject();
         jObject.put("Sender", this.Sender);
         jObject.put("Receiver", this.Receiver);
@@ -151,10 +163,42 @@ public class TransmittedMessage {
 
         JSONObject sDataObject = new JSONObject();
         for (Map.Entry<String, Object> entry : Data.entrySet()) {
-            sDataObject.put(entry.getKey(), entry.getValue());
+            if (entry.getKey() == "Features") {
+                sDataObject.put(entry.getKey(), SimpleFeatureManager.convertFeaturesToJSONArray((SimpleFeatureSource)entry.getValue()));
+            }
+            else
+                sDataObject.put(entry.getKey(), entry.getValue());
         }
         jObject.put("Data", sDataObject);
         return jObject;
+    }
+    
+    /**
+     *将要传输消息转为String格式
+     * @return
+     * @throws IOException
+     */
+    public String convertMessageToString() throws IOException
+    {
+        JSONObject jObject = new JSONObject();
+        jObject.put("Sender", this.Sender);
+        jObject.put("Receiver", this.Receiver);
+        jObject.put("TimeStamp", this.TimeStamp);
+        jObject.put("MessageType", this.MessageType);
+        jObject.put("MessageId", this.MessageId);
+        jObject.put("Instruction", this.Code.getDescription());
+        jObject.put("InstructionCode", this.Code.getValue() + this.Status.getValue());
+
+        JSONObject sDataObject = new JSONObject();
+        for (Map.Entry<String, Object> entry : Data.entrySet()) { 
+            if (entry.getKey() == "Features") {
+                sDataObject.put(entry.getKey(), SimpleFeatureManager.convertFeaturesToJSONArray((SimpleFeatureSource)entry.getValue()));
+            }
+            else
+                sDataObject.put(entry.getKey(), entry.getValue());
+        }
+        jObject.put("Data", sDataObject);
+        return jObject.toString();
     }
 
     /**
@@ -173,12 +217,14 @@ public class TransmittedMessage {
         FOperationCode code = FOperationCode.fromString(CodeStatus.substring(0, 4));
         FOperationStatus status = FOperationStatus.fromString(CodeStatus.substring(4));
         HashMap<String, Object> data = new HashMap<String, Object>();
+        HashMap<String, Class> dataType = new HashMap<String, Class>();
         JSONObject sdataObject = jObject.getJSONObject("Data");
         for (Iterator it = sdataObject.keySet().iterator(); it.hasNext();) {
             data.put(it.toString(), sdataObject.get(it));
+            dataType.put(it.toString(), sdataObject.get(it).getClass());
             it.next();
         }
-        return new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data);
+        return new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data,dataType);
     }
 
     public static void main(String[] args) throws Exception {
@@ -194,7 +240,11 @@ public class TransmittedMessage {
         data.put("ProjectName", "MyFirstProject");
         data.put("LayerName", "MyFirstLayer");
         data.put("Feature", "MyFirserFeature");
-        TransmittedMessage sMessage = new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data);
+        HashMap<String, Class> dataType = new HashMap<String, Class>();
+        data.put("ProjectName", String.class);
+        data.put("LayerName", String.class);
+        data.put("Feature", String.class);
+        TransmittedMessage sMessage = new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data,dataType);
         JSONObject jObject = sMessage.convertMessageToJson();
         System.out.print(jObject);
         TransmittedMessage sMessage2 = TransmittedMessage.convertJsonToMessage(jObject);

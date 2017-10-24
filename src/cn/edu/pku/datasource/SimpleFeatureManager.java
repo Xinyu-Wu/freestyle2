@@ -15,26 +15,44 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.poi.hwpf.converter.FontReplacer.Triplet;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureWriter;
 import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.Transaction;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.ng.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -760,7 +778,7 @@ public class SimpleFeatureManager {
                 SimpleFeature feature = it.next();
                 JSONObject jObject = new JSONObject();
                 int attrCount = feature.getAttributeCount();
-                jObject.put(sType.getType(0).getName().toString(), wktWriter.write((Geometry) feature.getAttribute(0)));
+                jObject.put("the_geom", wktWriter.write((Geometry) feature.getAttribute(0)));
                 for (int i = 1; i < attrCount; i++) {
                     Class sClass = sType.getType(i).getClass();
                     String sValue = "";
@@ -795,9 +813,86 @@ public class SimpleFeatureManager {
         SimpleFeatureType sType = sFeatureSource.getSchema();
         int attrCount = sType.getAttributeCount();
         for (int i = 0; i < attrCount; i++) {
-            jObject.put(sType.getType(i).getName().toString(), sType.getType(i).getBinding());
+            String key = sType.getType(i).getName().toString();
+            if ("Point".equals(key) || "LineString".equals(key) || "LinearRing".equals(key) || "Polygon".equals(key)) {
+                jObject.put("the_geom", sType.getType(i).getBinding().getName());
+            } else {
+                jObject.put(key, sType.getType(i).getBinding().getName());
+            }
         }
         return jObject;
+    }
+
+    /**
+     * 将Json格式转换为SimpleFeatureSource
+     *
+     * @param sFeatures
+     * @param sDataType
+     * @param sCachePath
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     * @throws ParseException
+     */
+    public static SimpleFeatureSource convertJSONObjectsToSimpleFeatureSource(JSONArray sFeatures, JSONObject sDataType, String sCachePath) throws MalformedURLException, IOException, ParseException, ClassNotFoundException {
+
+        //create shape destination file object
+        Map<String, Serializable> params = new HashMap<>();
+        FileDataStoreFactorySpi factory = new org.geotools.data.shapefile.ShapefileDataStoreFactory();
+        params.put(org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP.key, new File(sCachePath).toURI().toURL());
+        ShapefileDataStore ds = (ShapefileDataStore) factory.createNewDataStore(params);
+        //SimpleFeatureSource featureSource = (SimpleFeatureSource) new DefaultFeatureCollection();
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        Iterator iterator = sDataType.keys();
+        tb.setCRS(DefaultGeographicCRS.WGS84);
+        tb.setName("shapefile");
+        HashMap<String, Class> featureFields = new HashMap<>();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            Class value = Class.forName(sDataType.get(key).toString());
+            if (key == "Point" || key == "LineString" || key == "LinearRing" || key == "Polygon") {
+                tb.add("the_geom", value);
+                featureFields.put("the_geom", value);
+            } else {
+                tb.add(key, value);
+            }
+            featureFields.put(key, value);
+        }
+        ds.createSchema(tb.buildFeatureType());
+
+        //设置Writer  
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriter(ds.getTypeNames()[0], Transaction.AUTO_COMMIT);
+        WKTReader wktReader = new WKTReader();
+        for (int i = 0, len = sFeatures.size(); i < len; i++) {
+            String strFeature = sFeatures.get(i).toString();
+            Reader reader = new StringReader(strFeature);
+            SimpleFeature feature = writer.next();
+            Iterator featureIterator = sFeatures.getJSONObject(i).keys();
+            while (featureIterator.hasNext()) {
+                String key = (String) featureIterator.next();
+                Object value = sFeatures.getJSONObject(i).get(key);
+                if (key == "the_geom") {
+                    feature.setAttribute("the_geom", wktReader.read(value.toString()));
+                } else {
+                    feature.setAttribute(key, CastClass(featureFields.get(key),value));
+                }
+            }
+            writer.write();
+        }
+ writer.close();  
+        return ds.getFeatureSource();
+    }
+
+    private static Object CastClass(Class sClass, Object value) {
+        if (Integer.class == sClass) {
+            return Integer.parseInt(value.toString());
+        } else if (Double.class == sClass) {
+            return Double.parseDouble(value.toString());
+        } else if (Float.class == sClass) {
+            return Float.parseFloat(value.toString());
+        } else {
+            return value.toString();
+        }
     }
 
     //调试时主函数

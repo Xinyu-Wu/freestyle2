@@ -62,12 +62,12 @@ public class MessageHandler {
         FOperationStatus sendStatus = helloMsg.getStatus();
         HashMap<String, Object> sendData = helloMsg.getData();
         if (sender != Owner || sendMsgType != "Request" || sendStatus != FOperationStatus.Send) {
-            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, sendData,null);
+            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, sendData);
         } else {
             if (sendCode != FOperationCode.HelloWorld) {
-                return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, sendData,null);
+                return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, sendData);
             } else {
-                return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, sendData,null);
+                return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, sendData);
             }
         }
 
@@ -626,13 +626,13 @@ public class MessageHandler {
         FOperationCode sendCode = transMsg.getCode();
         FOperationStatus sendStatus = transMsg.getStatus();
         HashMap<String, Object> sendData = transMsg.getData();
-        HashMap<String, Class> sendDataType = transMsg.getDataType();
+        //HashMap<String, Class> sendDataType = transMsg.getDataType();
         sendData.put("ReturnMsg", errorMsg);
-        sendDataType.put("ReturnMsg", String.class);
+        //sendDataType.put("ReturnMsg", String.class);
         if (sender != Owner || sendMsgType != "Request" || sendStatus != FOperationStatus.Send) {
-            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, sendData,sendDataType);
+            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, sendData);
         } else {
-            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, sendData,sendDataType);
+            return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, sendData);
         }
     }
 
@@ -649,11 +649,12 @@ public class MessageHandler {
         data.put("ProjectName", "MyFirstProject");
         data.put("LayerName", "MyFirstLayer");
         data.put("Feature", "MyFirserFeature");
+        /*
         HashMap<String, Class> dataType = new HashMap<String, Class>();
         dataType.put("ProjectName", String.class);
         dataType.put("LayerName",String.class);
-        dataType.put("Feature", String.class);
-        TransmittedMessage sMessage = new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data,dataType);
+        dataType.put("Feature", String.class);*/
+        TransmittedMessage sMessage = new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data);
         //测试部分
         MessageHandler msgHandler = new MessageHandler("Debuger");
         TransmittedMessage sReturnMsg = msgHandler.helloHello(sMessage);

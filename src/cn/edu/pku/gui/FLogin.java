@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
+import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 
@@ -249,8 +250,16 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
     }
 
     private boolean userLogin(String id,String password) {
+        HashMap<String,String> sUserPwd = new HashMap<>();
+        sUserPwd.put("1", "1");
+        sUserPwd.put("sq", "sq");
+        sUserPwd.put("ccy", "ccy");
+        sUserPwd.put("yl", "yl");
+        sUserPwd.put("fyn", "fyn");
+        sUserPwd.put("wxy", "wxy");
+        return sUserPwd.keySet().contains(id) && password.equals(sUserPwd.get(id));
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return id.equals("1") && password.equals("1");
+       
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

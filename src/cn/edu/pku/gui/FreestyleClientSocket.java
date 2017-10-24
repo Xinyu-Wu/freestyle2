@@ -56,6 +56,25 @@ public class FreestyleClientSocket extends javax.swing.JFrame {
         sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);  
         TextArea.setText(null);  
     }  
+    
+    /**
+     * 发送消息
+     * @param message
+     */
+    public void send(String message) {  
+        if (!isConnected) {  
+            JOptionPane.showMessageDialog(this, "还没有连接服务器，无法发送消息！", "错误",  
+                    JOptionPane.ERROR_MESSAGE);  
+            return;  
+        } 
+        if (message == null || message.equals("")) {  
+            JOptionPane.showMessageDialog(this, "消息不能为空！", "错误",  
+                    JOptionPane.ERROR_MESSAGE);  
+            return;  
+        }  
+        sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);  
+        TextArea.setText(null);  
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.

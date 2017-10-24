@@ -626,7 +626,9 @@ public class MessageHandler {
         FOperationCode sendCode = transMsg.getCode();
         FOperationStatus sendStatus = transMsg.getStatus();
         HashMap<String, Object> sendData = transMsg.getData();
+        //HashMap<String, Class> sendDataType = transMsg.getDataType();
         sendData.put("ReturnMsg", errorMsg);
+        //sendDataType.put("ReturnMsg", String.class);
         if (sender != Owner || sendMsgType != "Request" || sendStatus != FOperationStatus.Send) {
             return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, sendData);
         } else {
@@ -647,6 +649,11 @@ public class MessageHandler {
         data.put("ProjectName", "MyFirstProject");
         data.put("LayerName", "MyFirstLayer");
         data.put("Feature", "MyFirserFeature");
+        /*
+        HashMap<String, Class> dataType = new HashMap<String, Class>();
+        dataType.put("ProjectName", String.class);
+        dataType.put("LayerName",String.class);
+        dataType.put("Feature", String.class);*/
         TransmittedMessage sMessage = new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data);
         //测试部分
         MessageHandler msgHandler = new MessageHandler("Debuger");

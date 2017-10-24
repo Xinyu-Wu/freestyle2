@@ -30,6 +30,8 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
   
     private boolean isStart = false;  
     
+    private FreeStyleServerMessageHandler freeStyleServerMessageHandler;
+    
     
     /**
      * Creates new form FreestyleServerSocket
@@ -38,6 +40,7 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
         listModel = new DefaultListModel();
         initComponents();
         ListUsers.setModel(listModel);
+        freeStyleServerMessageHandler= new FreeStyleServerMessageHandler("FreeStyleServer");
     }
 
     /**
@@ -515,6 +518,11 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
                 }  
             }  
         }  
+        
+        public void processMessage(String message)
+        {
+            
+        }
     }
     /**
      * @param args the command line arguments

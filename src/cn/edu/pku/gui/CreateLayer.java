@@ -103,6 +103,11 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
         jLabel2.setText("图层名");
 
         jbtnOK.setText("确定");
+        jbtnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnOKActionPerformed(evt);
+            }
+        });
 
         jbtnCancel.setText("取消");
 
@@ -149,6 +154,10 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
     private void jcbTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbTypeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jcbTypeActionPerformed
+
+    private void jbtnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnOKActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jbtnOKActionPerformed
 
     /**
      * @param args the command line arguments

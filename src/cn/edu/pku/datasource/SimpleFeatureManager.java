@@ -874,12 +874,12 @@ public class SimpleFeatureManager {
                 if (key == "the_geom") {
                     feature.setAttribute("the_geom", wktReader.read(value.toString()));
                 } else {
-                    feature.setAttribute(key, CastClass(featureFields.get(key),value));
+                    feature.setAttribute(key, CastClass(featureFields.get(key), value));
                 }
             }
             writer.write();
         }
- writer.close();  
+        writer.close();
         return ds.getFeatureSource();
     }
 

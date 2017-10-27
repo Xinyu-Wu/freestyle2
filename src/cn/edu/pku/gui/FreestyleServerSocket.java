@@ -5,6 +5,7 @@
  */
 package cn.edu.pku.gui;
 
+import cn.edu.pku.datasource.DBManager;
 import cn.edu.pku.datasource.FreestyleUser;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
     private ServerChatThread serverThread;  
     private ArrayList<ClientChatThread> clients;  
     private DefaultListModel listModel;
+    private DBManager dbManager;
   
     private boolean isStart = false;  
     
@@ -40,7 +42,8 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
         listModel = new DefaultListModel();
         initComponents();
         ListUsers.setModel(listModel);
-        freeStyleServerMessageHandler= new FreeStyleServerMessageHandler("FreeStyleServer");
+        dbManager=new DBManager("127.0.0.1","5432","Userinfo","root","19950310");
+        freeStyleServerMessageHandler= new FreeStyleServerMessageHandler("FreeStyleServer",dbManager);
     }
 
     /**

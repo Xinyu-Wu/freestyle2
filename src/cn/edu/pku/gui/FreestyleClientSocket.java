@@ -438,7 +438,7 @@ public class FreestyleClientSocket extends javax.swing.JFrame {
             String message = "";  
             while (true) {  
                 try {  
-                    message = reader.readLine();  
+                    message = reader.readLine();
                     StringTokenizer stringTokenizer = new StringTokenizer(  
                             message, "/@");  
                     String command = stringTokenizer.nextToken();// 命令  

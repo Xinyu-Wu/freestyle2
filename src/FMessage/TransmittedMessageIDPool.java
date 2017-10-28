@@ -46,4 +46,33 @@ public class TransmittedMessageIDPool {
         return Sender+"_"+Integer.toString(randomnumber);
     }
     
+    /**
+     * 判断ID是否在id池中
+     * @param msgID
+     * @return
+     */
+    public boolean isMsgIDinPool(String msgID)
+    {
+        String sender=msgID.split("_")[0];
+        String id=msgID.split("_")[1];
+        if (!sender.equals(Owner )|| !IdPool.contains(id)) {
+            return false;
+        }
+        else return true;
+    }
+    
+    /**
+     * 将ID从id池中移除
+     * @param msgID
+     * @return
+     */
+    public boolean removeMsgIDfromPool(String msgID)
+    {
+        if (isMsgIDinPool(msgID) == true) {
+            IdPool.remove(msgID.split("_")[1]);
+            return true;
+        }
+        else return false;
+    }
+    
 }

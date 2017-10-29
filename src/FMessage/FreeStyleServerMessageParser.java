@@ -9,6 +9,10 @@ package FMessage;
  *
  * @author sq
  */
-public class FreeStyleServerMessageParser {
+public class FreeStyleServerMessageParser extends MessageParser{
+    
+    public FreeStyleServerMessageParser(String owner) {
+        super(owner);
+    }
     
 }

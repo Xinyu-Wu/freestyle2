@@ -5,6 +5,7 @@
  */
 package cn.edu.pku.gui;
 
+import FMessage.FreeStyleServerMessageHandler;
 import cn.edu.pku.datasource.DBManager;
 import cn.edu.pku.datasource.FreestyleUser;
 import java.io.BufferedReader;

@@ -19,10 +19,11 @@ import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * 几何图像管理器
+ *
  * @author sq
  */
 public class GeometryManager {
-    
+
     /**
      * 获得要素类型（Class）
      *
@@ -43,7 +44,6 @@ public class GeometryManager {
         return ((Geometry) feature.getAttribute(0)).getGeometryType();
     }
 
-    
     /**
      * 获取要素的几何图形
      *
@@ -55,7 +55,7 @@ public class GeometryManager {
         //下面这个是网上给的
         return (Geometry) feature.getDefaultGeometry();
     }
-    
+
     /**
      * 获取要素集合的几何图形集合
      *
@@ -76,7 +76,7 @@ public class GeometryManager {
         }
         return sGeometryList;
     }
-    
+
     /**
      * 根据经纬度生成点
      *
@@ -183,6 +183,7 @@ public class GeometryManager {
         for (int i = 0; i < latLength; i++) {
             coordinateList.add(new Coordinate(lngArray[i], latArray[i]));
         }
+        coordinateList.add(new Coordinate(lngArray[0], latArray[0]));
         Coordinate[] coorArray = new Coordinate[coordinateList.size()];
         Polygon polygon = geometryFactory.createPolygon(coordinateList.toArray(coorArray));
         return polygon;
@@ -224,24 +225,22 @@ public class GeometryManager {
         Polygon polygon = geometryFactory.createPolygon(ring, null);
         return polygon;
     }
-    
-    public static boolean insertPointToPolyline(SimpleFeature feature,Point insertPoint,int index) throws Exception
-    {
-        Class featureClass=getFeatureClass(feature);
+
+    public static boolean insertPointToPolyline(SimpleFeature feature, Point insertPoint, int index) throws Exception {
+        Class featureClass = getFeatureClass(feature);
         if (featureClass != LineString.class || featureClass != LinearRing.class) {
             throw new Exception("要素不是线,不可操作");
         }
-        Geometry polyline=getGeometryFromFeature(feature);
-        if (polyline instanceof LineString ) {
-            LineString lineString = (LineString)polyline;
+        Geometry polyline = getGeometryFromFeature(feature);
+        if (polyline instanceof LineString) {
+            LineString lineString = (LineString) polyline;
             //lineString.
         }
         return false;
     }
-    
-    public static boolean isPointOnLine(Point sPoint,LineString line,double tolerance)
-    {
-        Geometry sBuffer= line.buffer(tolerance);
+
+    public static boolean isPointOnLine(Point sPoint, LineString line, double tolerance) {
+        Geometry sBuffer = line.buffer(tolerance);
         return sBuffer.intersects(sPoint);
     }
 

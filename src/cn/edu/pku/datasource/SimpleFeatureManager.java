@@ -473,7 +473,9 @@ public class SimpleFeatureManager {
         }
     }
 
+    
     /**
+     * 
      * 将几何图形添加到图层中
      *
      * @param layer
@@ -487,6 +489,67 @@ public class SimpleFeatureManager {
         //准备参数
         int sGeometryCout = sTargetGeometries.length;
         SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
+        Class featureSourceClass = featureSource.getFeatures().getSchema().getType(0).getBinding();
+        final SimpleFeatureType type = getSimpleFeatureType(featureSource);
+        DefaultFeatureCollection collection = new DefaultFeatureCollection();
+        for (int i = 0; i < sGeometryCout; i++) {
+            //检查shp与geometry是否同类型
+            Class geometryClass = sTargetGeometries[i].getClass();
+            if (featureSourceClass.equals(geometryClass) == false) {
+                return false;
+            }
+            //构建要素
+            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
+            featureBuilder.add(sTargetGeometries[i]);
+            HashMap<String, Class> sFieldDefinition = getSimpleFeatureFields(featureSource);
+            for (Map.Entry<String, Class> entry : sFieldDefinition.entrySet()) {
+                if (entry.getValue() != featureSourceClass) {
+                    featureBuilder.set(entry.getKey(), getFeatureFieldDefaultValue(entry.getValue())); // 写入属性值
+                }
+            }
+            SimpleFeature simpleFeature = featureBuilder.buildFeature(null);
+            collection.add(simpleFeature);
+        }
+
+        //构建事务，添加要素
+        Transaction transaction = new DefaultTransaction("Append");
+        try {
+            if (featureSource instanceof SimpleFeatureStore) {
+                SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+                featureStore.setTransaction(transaction);
+                try {
+                    featureStore.addFeatures(collection);
+                    transaction.commit();
+                } catch (Exception problem) {
+                    problem.printStackTrace();
+                    transaction.rollback();
+                } finally {
+                    transaction.close();
+                }
+            } else {
+                System.out.println(featureSource.getSchema().toString() + " does not support read/write access");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+     /**
+     * 将几何图形添加到要素源中
+     *
+     * @param sTargetFeatureSource
+     * @param sTargetGeometries
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws IOException
+     */
+    public static boolean addGeometriesToSimpleFeatureSource(SimpleFeatureSource sTargetFeatureSource, Geometry[] sTargetGeometries) throws IllegalAccessException, InstantiationException, IOException {
+        //准备参数
+        int sGeometryCout = sTargetGeometries.length;
+        SimpleFeatureSource featureSource = sTargetFeatureSource;
         Class featureSourceClass = featureSource.getFeatures().getSchema().getType(0).getBinding();
         final SimpleFeatureType type = getSimpleFeatureType(featureSource);
         DefaultFeatureCollection collection = new DefaultFeatureCollection();

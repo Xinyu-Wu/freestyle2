@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
  *
  * @author sq
  */
-public class FreeStyleSeverPureSocket {
+public class FreeStyleServerPureSocket {
     private ServerSocket serverSocket;  
     private ServerChatThread serverThread;  
     private ArrayList<ClientChatThread> clients;  
@@ -56,9 +56,9 @@ public class FreeStyleSeverPureSocket {
     /**
      * Creates new form FreestyleServerSocket
      */
-    public FreeStyleSeverPureSocket() {
+    public FreeStyleServerPureSocket(DBManager dbmanager) {
         listModel = new DefaultListModel();
-        dbManager=new DBManager("127.0.0.1","5432","Userinfo","root","19950310");
+        dbManager=dbmanager;
         serverMessageHandler= new FreeStyleServerMessageHandler("FreeStyleServer",dbManager);
         serverMessageCreator =new FreeStyleServerMessageCreator("FreeStyleServer");
         serverMessageParser = new FreeStyleServerMessageParser("FreeStyleServer");
@@ -381,7 +381,8 @@ public class FreeStyleSeverPureSocket {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FreeStyleSeverPureSocket();
+                DBManager dbmanager = new DBManager("127.0.0.1","5432","Userinfo","root","19950310");
+                new FreeStyleServerPureSocket(dbmanager);
             }
         });
     }

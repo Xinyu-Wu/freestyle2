@@ -43,7 +43,7 @@ public class FreestyleServerSocket extends javax.swing.JFrame {
         listModel = new DefaultListModel();
         initComponents();
         ListUsers.setModel(listModel);
-        dbManager=new DBManager("127.0.0.1","5432","Userinfo","root","19950310");
+        dbManager=new DBManager("10.128.176.234","5433","gis_20170922","sunqi","sunqi");
         freeStyleServerMessageHandler= new FreeStyleServerMessageHandler("FreeStyleServer",dbManager);
     }
 

@@ -27,6 +27,12 @@ import org.opengis.feature.simple.SimpleFeatureType;
  */
 public class CreateNewLayer {
 
+    /**
+     * @创建图层
+     * @param layername 名称
+     * @param geom 图层类型
+     * @return 
+     */
     static public FeatureLayer CreateLayer(String layername, String geom) {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setCRS(DefaultGeographicCRS.WGS84);
@@ -43,6 +49,7 @@ public class CreateNewLayer {
         SimpleFeatureType TYPE = typeBuilder.buildFeatureType();
         ListFeatureCollection collection= new ListFeatureCollection(TYPE);
         FeatureLayer newLayer = new FeatureLayer(collection, null, layername);
+        
         return newLayer;
 
     }

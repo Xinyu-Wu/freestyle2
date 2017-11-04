@@ -272,7 +272,9 @@ public class DrawEditingFeature {
         Layer newLayer = drawPane.getMapContent().layers().get(size);
         SimpleFeatureType TYPE=(SimpleFeatureType)newLayer.getFeatureSource().getSchema();
         ListFeatureCollection collection = new ListFeatureCollection(TYPE);
-        FeatureLayer layer = new FeatureLayer(collection, null, "2");
+        //TODO add geometry to collection(simpleFeatureManege Update)
+        //Change Style
+        FeatureLayer layer = new FeatureLayer(collection, null, newLayer.getTitle());
         drawPane.getMapContent().removeLayer(newLayer);
         drawPane.getMapContent().addLayer(layer);
     }

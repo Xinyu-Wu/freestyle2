@@ -67,21 +67,6 @@ public class ArrayListtoArray {
     }
     
     /**
-     * @Arraylist与int数组转换
-     * @param arrayList Integer列表
-     * @return 
-     */
-    //
-    static public int [] ArrayListtoIntArray(ArrayList<Integer> arrayList){
-        int[] array=new int[arrayList.size()];
-        for(int i=0;i<arrayList.size();i++)
-        {
-            array[i]=arrayList.get(i);
-        }
-        return array;
-    }
-    
-    /**
      * @Point转为int类型的x坐标数组
      * @param arrayList Point列表
      * @return 
@@ -106,4 +91,20 @@ public class ArrayListtoArray {
         }
         return array;
     }
+    
+    /**
+     * @Arraylist与int数组转换
+     * @param arrayList Integer列表
+     * @return 
+     */
+    //
+    static public int [] ArrayListtoIntArray(ArrayList<Integer> arrayList){
+        int[] array=new int[arrayList.size()];
+        for(int i=0;i<arrayList.size();i++)
+        {
+            array[i]=arrayList.get(i);
+        }
+        return array;
+    }
+    
 }

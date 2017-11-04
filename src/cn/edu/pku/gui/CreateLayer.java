@@ -54,6 +54,7 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER) {
                     createNewLayer();
+                    dispose();
                 }
             }
         };
@@ -64,6 +65,7 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand() == "确定") {
             createNewLayer();
+            dispose();
         } else if (e.getActionCommand() == "取消") {
             dispose();
         }

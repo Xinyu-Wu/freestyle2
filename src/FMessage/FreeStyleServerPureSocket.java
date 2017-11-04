@@ -200,6 +200,7 @@ public class FreeStyleServerPureSocket {
             serverThread = new ServerChatThread(serverSocket, max);  
             serverThread.start();  
             isStart = true;  
+            System.out.println("FMessage.FreeStyleServerPureSocket.serverStart()");
         } catch (BindException e) {  
             isStart = false;  
             throw new BindException("端口号已被占用，请换一个！");  
@@ -354,7 +355,7 @@ public class FreeStyleServerPureSocket {
   
         // 转发消息  
         public void dispatcherMessage(String message) {  
-            StringTokenizer stringTokenizer = new StringTokenizer(message, "@");  
+            /*StringTokenizer stringTokenizer = new StringTokenizer(message, "@");  
             String source = stringTokenizer.nextToken();  
             String owner = stringTokenizer.nextToken();  
             String content = stringTokenizer.nextToken();  
@@ -365,7 +366,23 @@ public class FreeStyleServerPureSocket {
                     clients.get(i).getWriter().println(message + "(多人发送)");  
                     clients.get(i).getWriter().flush();  
                 }  
-            }  
+            }  */
+            try
+            {
+            TransmittedMessage transMsg = TransmittedMessage.convertStringToMessage(message);
+            TransmittedMessage returnMsg = serverMessageHandler.instructionClassification(transMsg);
+            for (int i = clients.size() - 1; i >= 0; i--) {  
+               if (clients.get(i).user.getUserID().equals(returnMsg.getReceiver())) {
+                   clients.get(i).getWriter().println(returnMsg.convertMessageToString());  
+                    clients.get(i).getWriter().flush();  
+               }
+                    
+                }
+            }
+            catch(Exception err)
+            {
+                
+            }
         }  
         
         public void processMessage(String message)
@@ -381,8 +398,9 @@ public class FreeStyleServerPureSocket {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                DBManager dbmanager = new DBManager("127.0.0.1","5432","Userinfo","root","19950310");
-                new FreeStyleServerPureSocket(dbmanager);
+                DBManager dbmanager = new DBManager("10.128.176.234","5432","freestyleUser","sunqi","sunqi");
+                FreeStyleServerPureSocket sps= new FreeStyleServerPureSocket(dbmanager);
+                sps.startActionPerformed(100, "8000");
             }
         });
     }

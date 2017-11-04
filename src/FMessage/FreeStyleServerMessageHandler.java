@@ -11,6 +11,8 @@ import FMessage.MessageHandler;
 import FMessage.TransmittedMessage;
 import cn.edu.pku.datasource.DBManager;
 import java.util.HashMap;
+import java.util.List;
+import net.sf.json.JSONArray;
 
 /**
  * FreeStyle服务端消息处理器
@@ -50,9 +52,59 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 try {
                     String userName = sendData.get("UserName").toString();
                     String password = sendData.get("Password").toString();
+                    boolean isverfied = dbManager.signup(userName, password);
+                    if (isverfied) {
+                        returnData.put("ReturnMsg", "Welcome");
+                        return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
+                    } else {
+                        returnData.put("ReturnMsg", "Not Welcome");
+                        return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Refuse, returnData);
+                    }
+
+                } catch (Exception err) {
+                    returnData.put("ReturnMsg", err.getMessage());
+                    return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, returnData);
+                }
+
+            }
+        }
+
+    }
+    
+    @Override
+    public TransmittedMessage UserSignIn(TransmittedMessage transMsg) throws Exception {
+        //TODO
+        String receiver = transMsg.getSender();
+        String sender = transMsg.getReceiver();
+        long sendTime = transMsg.getTimeStamp();
+        String sendMsgId = transMsg.getMessageId();
+        String sendMsgType = transMsg.getMessageType();
+        FOperationCode sendCode = transMsg.getCode();
+        FOperationStatus sendStatus = transMsg.getStatus();
+        HashMap<String, Object> sendData = transMsg.getData();
+        HashMap<String, Object> returnData = new HashMap<>();
+        if (!sender.equals(this.getOwner()) || !"Request".equals(sendMsgType) || sendStatus != FOperationStatus.Send) {
+            returnData.put("ReturnMsg", "!sender.equals(this.getOwner()) || !Request.equals(sendMsgType) || sendStatus != FOperationStatus.Send");
+            return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, returnData);
+        } else {
+            if (sendCode != FOperationCode.UserSignIn) {
+                returnData.put("ReturnMsg", "sendCode != FOperationCode.UserSignIn");
+                return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, returnData);
+            } else {
+                //TODO
+                try {
+                    String userName = sendData.get("UserName").toString();
+                    String password = sendData.get("Password").toString();
                     boolean isverfied = dbManager.verifyLogin(userName, password);
                     if (isverfied) {
                         returnData.put("ReturnMsg", "Welcome");
+                        List<String> mProject=dbManager.queryProjectbyUser("UserName");
+                        JSONArray ja=new JSONArray();
+                        for(int i=0;i<mProject.size();i++)
+                        {
+                            ja.add(mProject.get(i));
+                        }
+                        returnData.put("ProjectList", ja);
                         return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
                     } else {
                         returnData.put("ReturnMsg", "Not Welcome");

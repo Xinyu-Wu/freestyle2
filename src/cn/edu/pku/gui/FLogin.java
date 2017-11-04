@@ -5,6 +5,8 @@
  */
 package cn.edu.pku.gui;
 
+import FMessage.FreeStyleClientPureSocket;
+import FMessage.TransmittedMessage;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,8 +14,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+import net.sf.json.JSONArray;
 
 /**
  *
@@ -26,6 +31,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
     JButton jbtnRegister, jbtnLogin, jbtnReset;//按钮
     JTextField jtfID;//文本
     JPasswordField jpf;//密码
+    FreeStyleClientPureSocket mSocket;
     
     /**
      * Creates new form login
@@ -33,6 +39,10 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
     //构造函数
     public FLogin() {
         initComponents();
+        
+        mSocket=new FreeStyleClientPureSocket();
+        //mSocket.clientMessageParser.UserSignIn=this::userLoginReceive;
+        
         //创建面板 
         jp1=new JPanel();
         jp2=new JPanel();
@@ -147,17 +157,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
     
     public void login(){
         System.out.println("cn.edu.pku.gui.FLogin.login()");
-        if(userLogin(jtfID.getText(),jpf.getText()))
-        {
-            JOptionPane.showMessageDialog(null,"登录成功！","FreeStyle",JOptionPane.INFORMATION_MESSAGE);
-            clear();
-            //关闭当前界面
-            dispose();
-            //进入主界面
-            Main_win fMain=new Main_win();
-            fMain.setVisible(true);   
-        }
-        else if(jtfID.getText().isEmpty()&& jpf.getText().isEmpty())
+        if(jtfID.getText().isEmpty()&& jpf.getText().isEmpty())
         {
             JOptionPane.showMessageDialog(null,"请输入用户名与密码!","FreeStyle",JOptionPane.WARNING_MESSAGE);
         }
@@ -170,15 +170,25 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
             JOptionPane.showMessageDialog(null,"请输入密码!","FreeStyle",JOptionPane.WARNING_MESSAGE);
         }
         else
-        {
-            JOptionPane.showMessageDialog(null,"用户名或密码错误！\n 请重新输入！","FreeStyle",JOptionPane.ERROR_MESSAGE);
-            clear();
-        }
-        
+            userLogin(jtfID.getText(),jpf.getText());
     }
     
     public void register(){
         System.out.println("cn.edu.pku.gui.FLogin.register()");
+        if(jtfID.getText().isEmpty()&& jpf.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(null,"请输入用户名与密码!","FreeStyle",JOptionPane.WARNING_MESSAGE);
+        }
+        else if(jtfID.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(null,"请输入用户名!","FreeStyle",JOptionPane.WARNING_MESSAGE);
+        }
+        else if(jpf.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(null,"请输入密码!","FreeStyle",JOptionPane.WARNING_MESSAGE);
+        }
+        else
+            userLogin(jtfID.getText(),jpf.getText());
     }
     
     public void clear(){
@@ -244,13 +254,14 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 FLogin fLogin=new FLogin();
+                fLogin.mSocket.clientMessageParser.UserSignIn=fLogin::userLoginReceive;
                 fLogin.setVisible(true);
             }
         });
     }
 
     private boolean userLogin(String id,String password) {
-        HashMap<String,String> sUserPwd = new HashMap<>();
+        /*HashMap<String,String> sUserPwd = new HashMap<>();
         sUserPwd.put("1", "1");
         sUserPwd.put("sq", "sq");
         sUserPwd.put("ccy", "ccy");
@@ -258,8 +269,75 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
         sUserPwd.put("fyn", "fyn");
         sUserPwd.put("wxy", "wxy");
         return sUserPwd.keySet().contains(id) && password.equals(sUserPwd.get(id));
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.*/
+        mSocket.ownerChanged(id);
+        String messageID=mSocket.clientMessageIDPool.getOneRandomID(id);
+        try {
+            TransmittedMessage tm=mSocket.clientMessageCreator.UserSignIn("FreeStyleServer", messageID, id, password);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }       
+    }
+    
+    private boolean userLoginReceive(TransmittedMessage tm){
+        HashMap<String,Object> hm=new HashMap<>();
+        hm=tm.getData();
+        if(hm.get("ReturnMsg").toString().equals("Welcome"))
+        {
+            JOptionPane.showMessageDialog(null,"登录成功！","FreeStyle",JOptionPane.INFORMATION_MESSAGE);
+            clear();
+            //关闭当前界面
+            dispose();
+            //进入主界面
+            Main_win fMain=new Main_win();
+            fMain.setVisible(true);   
+            JSONArray ja=(JSONArray)hm.get("ProjectList");
+            return true;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null,"用户名或密码错误！\n 请重新输入！","FreeStyle",JOptionPane.ERROR_MESSAGE);
+            clear();
+            return false;
+        }
+    }
+    
+    private boolean userRegister(String id,String password) {
+        
+        String messageID=mSocket.clientMessageIDPool.getOneRandomID(id);
+        try {
+            TransmittedMessage tm=mSocket.clientMessageCreator.UserSignUp("FreeStyleServer", messageID, id, password);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }       
+    }
+    
+    private boolean userRegisterReceive(TransmittedMessage tm){
+        HashMap<String,Object> hm=new HashMap<>();
+        hm=tm.getData();
+        if(hm.get("ReturnMsg").toString().equals("Welcome"))
+        {
+            JOptionPane.showMessageDialog(null,"注册成功！","FreeStyle",JOptionPane.INFORMATION_MESSAGE);
+            clear();
+            //关闭当前界面
+            dispose();
+            //进入主界面
+            Main_win fMain=new Main_win();
+            fMain.setVisible(true);   
+            return true;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null,"用户名或密码错误！\n 请重新输入！","FreeStyle",JOptionPane.ERROR_MESSAGE);
+            clear();
+            return false;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

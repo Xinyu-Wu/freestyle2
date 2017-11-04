@@ -66,7 +66,7 @@ public class FreeStyleClientPureSocket {
     }
     
 
-    private void ownerChanged(String owner)
+    public void ownerChanged(String owner)
     {
         clientMessageHandler = new FreeStyleClientMessageHandler(owner);
         clientMessageCreator = new FreeStyleClientMessageCreator(owner);

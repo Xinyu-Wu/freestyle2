@@ -38,11 +38,11 @@ public class CreateFProject extends javax.swing.JFrame implements ActionListener
         jp2=new JPanel();
         
         //创建标签
-        jlb1=new JLabel("工程名");
+        jlb1=new JLabel("Project Name");
         
         //创建按钮
-        jbtnOK= new JButton("确定");
-        jbtnCancel=new JButton("取消");
+        jbtnOK= new JButton("OK");
+        jbtnCancel=new JButton("Cancel");
         
         //创建文本框
         jtfFPName=new JTextField(20);
@@ -65,7 +65,7 @@ public class CreateFProject extends javax.swing.JFrame implements ActionListener
         this.add(new JPanel(null));
 
         //设置窗体
-        this.setTitle("新建工程");
+        this.setTitle("New Project");
         this.setSize(350,200);
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//退出关闭
@@ -94,11 +94,11 @@ public class CreateFProject extends javax.swing.JFrame implements ActionListener
     }
     
     public void actionPerformed(ActionEvent e){
-        if(e.getActionCommand()=="确定")
+        if(e.getActionCommand()=="OK")
         {
-            createNewFProject(jtfFPName.getText());            
+            createNewFProject(jtfFPName.getText());   
         }
-        else if(e.getActionCommand()=="取消")
+        else if(e.getActionCommand()=="Cancel")
         {
             dispose();
         }
@@ -108,8 +108,9 @@ public class CreateFProject extends javax.swing.JFrame implements ActionListener
         String title= "FreeStyle-"+name + ".prj";
         fMain.setTitle(title);
         dispose();
-        JOptionPane.showMessageDialog(null,"工程"+jtfFPName.getText()+"\n新建成功!","FreeStyle",JOptionPane.INFORMATION_MESSAGE);   
+        JOptionPane.showMessageDialog(null,"Project "+jtfFPName.getText()+"\n is created successfully !","FreeStyle",JOptionPane.INFORMATION_MESSAGE);   
         fMain.mFProject=new FProject(name);
+        this.fMain.setVisible(true);
     }
 
     /**

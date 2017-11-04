@@ -91,7 +91,7 @@ public class DBManager {
      * @param userid
      * @param password 
      */
-    public void signup(String userid, String password){
+    public boolean signup(String userid, String password){
         Connection dm = null;
         Statement stmt = null;
         PostgreSQLManager manager = new PostgreSQLManager();
@@ -104,7 +104,7 @@ public class DBManager {
                 System.out.println(userid+" already exists. Add "+userid+" failed.");
                 stmt.close();
                 dm.close();
-                return;
+                return false;
             }
             
             String sql = "INSERT INTO userinfo(userid,password)" +
@@ -113,8 +113,10 @@ public class DBManager {
             stmt.close();
             dm.close();
             System.out.println("Signed up successfully");
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
     /**

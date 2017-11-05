@@ -143,6 +143,7 @@ public class DBManager {
             stmt.close();
             dm.close();
             System.out.println("Signed up successfully");
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
             success = false;

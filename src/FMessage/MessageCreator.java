@@ -595,6 +595,25 @@ public class MessageCreator {
             return this.getDefaultMsg(sReceiver, msgID, "CreateProject 生成函数为空");
         }
     }
+    
+     /**
+     * 连接测试
+     *
+     * @param sReceiver
+     * @param msgID
+     * @param username
+     * @param ipport
+     * @param operator
+     * @return
+     * @throws Exception
+     */
+    public TransmittedMessage helloHello(String sReceiver, String msgID,String username,String ipport, String operator) throws Exception {
+        if (this.isDebug() == true) {
+            throw new UnsupportedOperationException("helloHello 生成函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        } else {
+            return this.getDefaultMsg(sReceiver, msgID, "helloHello 生成函数为空");
+        }
+    }
 
     /**
      * 删除工程

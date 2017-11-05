@@ -288,7 +288,7 @@ public class TransmittedMessage {
         JSONObject sdataObject = jObject.getJSONObject("Data");
         for (Iterator it = sdataObject.keys(); it.hasNext();) {
             String key = (String) it.next();
-            data.put(key, (String.class).cast(sdataObject.get(key)));
+             data.put(key, sdataObject.get(key));
         }
         return new TransmittedMessage(sender, receiver, timeStamp, messageType, messageId, code, status, data);
     }

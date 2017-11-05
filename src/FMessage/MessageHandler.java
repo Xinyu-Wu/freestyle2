@@ -546,7 +546,7 @@ public class MessageHandler {
             case HelloWorld:
                 return this.helloHello(transMsg);
             case UserSignUp:
-                return this.UserSignIn(transMsg);
+                return this.UserSignUp(transMsg);
             case UserSignIn:
                 return this.UserSignIn(transMsg);
             case UserSignOut:

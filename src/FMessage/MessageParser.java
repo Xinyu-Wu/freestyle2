@@ -458,7 +458,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public ArrayList<String> UserProjectUserList(TransmittedMessage transMsg) throws Exception {
+    public Object UserProjectUserList(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("UserProjectUserList 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -563,7 +563,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public ArrayList<String> GetProjectList(TransmittedMessage transMsg) throws Exception {
+    public Object GetProjectList(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("GetProjectList 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -578,7 +578,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public ArrayList<String> GetProjectContetnt(TransmittedMessage transMsg) throws Exception {
+    public Object GetProjectContetnt(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("GetProjectContetnt 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -593,7 +593,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public SimpleFeatureSource GetLayerContent(TransmittedMessage transMsg) throws Exception {
+    public Object GetLayerContent(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("GetLayerContent 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -638,7 +638,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public SimpleFeatureSource GetQueryResult(TransmittedMessage transMsg) throws Exception {
+    public Object GetQueryResult(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("GetQueryResult 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {
@@ -683,7 +683,7 @@ public class MessageParser {
      * @return
      * @throws Exception
      */
-    public SimpleFeatureSource SendSecretlyObserveData(TransmittedMessage transMsg) throws Exception {
+    public Object SendSecretlyObserveData(TransmittedMessage transMsg) throws Exception {
         if (this.isDebug() == true) {
             throw new UnsupportedOperationException("SendSecretlyObserveData 处理函数为空. Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         } else {

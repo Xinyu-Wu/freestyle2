@@ -593,8 +593,10 @@ lineend.y=(evt.getY());
         }
         else
         {
+            /*喵喵喵？？？先注释掉，等接口完善了再加进去
              CreateLayer cl=new CreateLayer();
              cl.setVisible(true);
+            */
         }
     }//GEN-LAST:event_CreatelayerActionPerformed
 

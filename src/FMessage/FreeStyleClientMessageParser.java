@@ -5,6 +5,7 @@
  */
 package FMessage;
 
+import cn.edu.pku.gui.FLogin;
 import java.util.HashMap;
 
 /**
@@ -15,6 +16,39 @@ public class FreeStyleClientMessageParser  extends MessageParser{
     
     public FreeStyleClientMessageParser(String owner) {
         super(owner);
+    }
+    
+    public FLogin fLogin;
+    
+    public void setFLogin( FLogin flogin)
+    {
+        fLogin=flogin;
+        System.out.println("CMP:Flogin is setted");
+    }
+    
+    @Override
+    public String UserSignIn(TransmittedMessage transMsg) 
+    {
+        if (fLogin.userLoginReceive(transMsg)) {
+            return "OK";
+        }
+        else return "Error";
+    }
+    
+    /**
+     *
+     * @param transMsg
+     * @return
+     */
+    @Override
+    public String helloHello(TransmittedMessage transMsg) 
+    {
+        HashMap<String,Object> mdata= transMsg.getData();
+        if (mdata.get("ReturnMsg").equals("Hello")) {
+            System.out.println("helloHello:OK");
+            return "OK";
+        }
+        else return "Error";
     }
     
     public String UserSignUp(TransmittedMessage transMsg) throws Exception {

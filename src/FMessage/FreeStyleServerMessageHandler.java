@@ -122,6 +122,50 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
     }
 
     /**
+     * 连接测试
+     *
+     * @param transMsg
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public TransmittedMessage helloHello(TransmittedMessage transMsg) throws Exception {
+        //获取transMsg 对应的参数
+        String receiver = transMsg.getSender();
+        String sender = transMsg.getReceiver();
+        long sendTime = transMsg.getTimeStamp();
+        String sendMsgId = transMsg.getMessageId();
+        String sendMsgType = transMsg.getMessageType();
+        FOperationCode sendCode = transMsg.getCode();
+        FOperationStatus sendStatus = transMsg.getStatus();
+        HashMap<String, Object> sendData = transMsg.getData();
+        HashMap<String, Object> returnData = new HashMap<>();
+        //检查消息的正确性
+        if (!sender.equals(this.getOwner()) || !"Request".equals(sendMsgType) || sendStatus != FOperationStatus.Send) {
+            returnData.put("ReturnMsg", "!sender.equals(this.getOwner()) || !Request.equals(sendMsgType) || sendStatus != FOperationStatus.Send");
+            return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.WTF, returnData);
+        } else {
+            if (sendCode != FOperationCode.HelloWorld) {
+                //根据对应的操作类型进行更改
+                returnData.put("ReturnMsg", "sendCode != FOperationCode.HelloWorld");
+                return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, returnData);
+            } else {
+                //基本信息正确，进行下一步具体的操作
+                try {
+                    returnData.put("ReturnMsg", "Hello");
+                    return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
+                } catch (Exception err) {
+                    //输出报错信息
+                    returnData.put("ReturnMsg", err.getMessage());
+                    return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, returnData);
+                }
+
+            }
+        }
+        //最后把这个return null 删掉，仅为了通过编译
+    }
+    
+    /**
      * 模板
      *
      * @param transMsg

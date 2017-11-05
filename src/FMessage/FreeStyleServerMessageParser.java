@@ -5,6 +5,8 @@
  */
 package FMessage;
 
+import cn.edu.pku.gui.FLogin;
+
 /**
  *
  * @author sq
@@ -14,5 +16,7 @@ public class FreeStyleServerMessageParser extends MessageParser{
     public FreeStyleServerMessageParser(String owner) {
         super(owner);
     }
+    
+    
     
 }

@@ -284,6 +284,78 @@ public class MessageParser {
         }
     }
     
+    public Object instructionClassification_2(TransmittedMessage transMsg) throws Exception {
+        FOperationCode sendCode = transMsg.getCode();
+        switch (sendCode) {
+            case HelloWorld:
+                return helloHello(transMsg);
+            case UserSignUp:
+                return UserSignUp(transMsg);
+            case UserSignIn:
+                return UserSignIn(transMsg);
+            case UserSignOut:
+                return UserSignOut(transMsg);
+            case UserChatLoadUp:
+                return UserChatLoadUp(transMsg);
+            case UserChatBroadcast:
+                return UserChatBroadcast(transMsg);
+            case UserAddToProject:
+                return UserAddToProject(transMsg);
+            case UserProjectUserList:
+                return UserProjectUserList(transMsg);
+            case UserDeleteFromProject:
+                return UserDeleteFromProject(transMsg);
+            case SeverRefresh:
+                return SeverRefresh(transMsg);
+            case SeverBreakDown:
+                return SeverBreakDown(transMsg);
+            case SeverRestart:
+                return SeverRestart(transMsg);
+            case SeverMaintain:
+                return SeverMaintain(transMsg);
+            case SeverTransportData:
+                return SeverTransportData(transMsg);
+            case GetProjectList:
+                return GetProjectList(transMsg);
+            case GetProjectContetnt:
+                return GetProjectContetnt(transMsg);
+            case GetLayerContent:
+                return GetLayerContent(transMsg);
+            case GetLayerReadLock:
+                return GetLayerReadLock(transMsg);
+            case ReleaseLayerReadLock:
+                return ReleaseLayerReadLock(transMsg);
+            case GetQueryResult:
+                return GetQueryResult(transMsg);
+            case GetSecretlyObserveLock:
+                return GetSecretlyObserveLock(transMsg);
+            case ReleaseSecretlyObserveLock:
+                return ReleaseSecretlyObserveLock(transMsg);
+            case SendSecretlyObserveData:
+                return SendSecretlyObserveData(transMsg);
+            case GetLayerWriteLock:
+                return GetLayerWriteLock(transMsg);
+            case ReleaseLayerWriteLock:
+                return ReleaseLayerWriteLock(transMsg);
+            case AddOneNewLayer:
+                return AddOneNewLayer(transMsg);
+            case DeleteOneLayer:
+                return DeleteOneLayer(transMsg);
+            case AddFeatures:
+                return AddFeatures(transMsg);
+            case ModifyFeatures:
+                return ModifyFeatures(transMsg);
+            case DeleteFeatures:
+                return DeleteFeatures(transMsg);
+            case CreateProject:
+                return CreateProject(transMsg);
+            case DeleteProject:
+                return DeleteProject(transMsg);
+            default:
+                return CatchErroMessage(transMsg);
+        }
+    }
+    
     public static boolean testInterface(TransmittedMessage a){
         return false;
     }
@@ -778,5 +850,13 @@ public class MessageParser {
         } else {
             return new TransmittedMessage(Owner, receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Error, sendData);
         }
+    }
+
+    public String helloHello(TransmittedMessage transMsg) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Object CatchErroMessage(TransmittedMessage transMsg) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

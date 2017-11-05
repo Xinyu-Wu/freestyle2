@@ -20,6 +20,22 @@ public class FreeStyleClientMessageCreator extends MessageCreator{
     
     
     @Override
+    public TransmittedMessage helloHello(String sReceiver,String msgID,String username,String ipport, String operator) throws Exception {
+        String receiver = sReceiver;
+        String sender = this.getOwner();
+        long sendTime = super.getCurTime();
+        String sendMsgId = msgID;
+        String sendMsgType = "Request";
+        FOperationCode sendCode = FOperationCode.HelloWorld;
+        FOperationStatus sendStatus = FOperationStatus.Send;
+        HashMap<String, Object> sendData = new HashMap<>();
+        sendData.put("UserName", username);
+        sendData.put("IpPort", ipport);
+        sendData.put("Operator", operator);
+        return new TransmittedMessage(sender, receiver, sendTime, sendMsgType, sendMsgId, sendCode, sendStatus, sendData);
+    }
+    
+    @Override
     public TransmittedMessage UserSignUp(String sReceiver,String msgID,String user,String pwd) throws Exception {
         String receiver = sReceiver;
         String sender = this.getOwner();

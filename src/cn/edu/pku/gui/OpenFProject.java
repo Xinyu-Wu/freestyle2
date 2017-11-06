@@ -167,8 +167,8 @@ public class OpenFProject extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Main_win main=new Main_win("test");
-                new OpenFProject(main).setVisible(true);
+               // Main_win main=new Main_win("test");
+               // new OpenFProject(main).setVisible(true);
             }
         });
     }

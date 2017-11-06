@@ -286,23 +286,28 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         HashMap<String, Object> hm = new HashMap<>();
         hm = tm.getData();
         if (hm.get("ReturnMsg").toString().equals("Welcome")) {
-            JOptionPane.showMessageDialog(null, "登录成功！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
-            clear();
-            //关闭当前界面
-            dispose();
-            //进入主界面
-            Main_win fMain = new Main_win(jtfID.getText());
-            fMain.setVisible(false);
-            JSONArray ja = (JSONArray) hm.get("ProjectList");
-            
-            OpenFProject op=new OpenFProject(fMain);
-            for(int i=0;i<ja.size();i++)
-            {
-                op.dlm.addElement(ja.get(i).toString());
+            try {
+                JOptionPane.showMessageDialog(null, "登录成功！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
+                clear();
+                //关闭当前界面
+                dispose();
+                //进入主界面
+                Main_win fMain = new Main_win(jtfID.getText());
+                fMain.setVisible(false);
+                JSONArray ja = (JSONArray) hm.get("ProjectList");
+                
+                OpenFProject op=new OpenFProject(fMain);
+                for(int i=0;i<ja.size();i++)
+                {
+                    op.dlm.addElement(ja.get(i).toString());
+                }
+                op.setList();
+                
+                return true;
+            } catch (Exception ex) {
+                Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
             }
-            op.setList();
-
-            return true;
         } else {
             JOptionPane.showMessageDialog(null, "用户名或密码错误！\n 请重新输入！", "FreeStyle", JOptionPane.ERROR_MESSAGE);
             clear();
@@ -327,16 +332,21 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         HashMap<String, Object> hm = new HashMap<>();
         hm = tm.getData();
         if (hm.get("ReturnMsg").toString().equals("Welcome")) {
-            JOptionPane.showMessageDialog(null, "注册成功！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
-            clear();
-            //关闭当前界面
-            dispose();
-            //进入主界面
-            Main_win fMain = new Main_win(jtfID.getText());
-            fMain.setVisible(false);
-            
-            CreateFProject cfp=new CreateFProject(fMain);
-            return true;
+            try {
+                JOptionPane.showMessageDialog(null, "注册成功！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
+                clear();
+                //关闭当前界面
+                dispose();
+                //进入主界面
+                Main_win fMain = new Main_win(jtfID.getText());
+                fMain.setVisible(false);
+                
+                CreateFProject cfp=new CreateFProject(fMain);
+                return true;
+            } catch (Exception ex) {
+                Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
         } else {
             JOptionPane.showMessageDialog(null, "用户名或密码错误！\n 请重新输入！", "FreeStyle", JOptionPane.ERROR_MESSAGE);
             clear();

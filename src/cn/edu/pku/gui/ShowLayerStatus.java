@@ -21,6 +21,14 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
     }
+    
+    public ShowLayerStatus(String Project) {
+        initComponents();
+        this.setLocationRelativeTo(null);//屏幕中间显示
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
+        
+        
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

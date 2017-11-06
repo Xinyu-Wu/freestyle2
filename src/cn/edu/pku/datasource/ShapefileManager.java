@@ -37,18 +37,22 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import cn.edu.pku.gui.Main_win;
 import org.geotools.swing.JMapPane;
 
-/***
+/**
+ * *
  * @Target(ElementType.TYPE)
  * @author wuxinyu
  */
 public class ShapefileManager {
+
     /**
      * read shapefile from file storaged on disk
+     *
      * @param file FileType and end with .shp
      * @return a set of features
      */
-    public static Main_win mainwin =null; 
-    public SimpleFeatureSource readShpFromFile(File file){
+    public static Main_win mainwin = null;
+
+    public SimpleFeatureSource readShpFromFile(File file) {
         try {
             if (file == null) {
                 return null;
@@ -61,14 +65,15 @@ public class ShapefileManager {
         }
         return null;
     }
-    
+
     /**
      * write shapefile to disk
+     *
      * @param layer map.layer
      * @param path destination filepath
      * @return ture or false
      */
-    public boolean writeShpToFile(Layer layer, String path){
+    public boolean writeShpToFile(Layer layer, String path) {
         try {
             //create shape destination file object
             Map<String, Serializable> params = new HashMap<>();
@@ -79,33 +84,33 @@ public class ShapefileManager {
             SimpleFeatureSource sfs = (SimpleFeatureSource) layer.getFeatureSource();
             //下面这行还有其他写法，根据源shape文件的simpleFeatureType可以不用retype，而直接用fs.getSchema设置  
             ds.createSchema(sfs.getSchema());
-            
+
             //设置writer  
-            FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriter(ds.getTypeNames()[0], 
-                    Transaction.AUTO_COMMIT);  
+            FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriter(ds.getTypeNames()[0],
+                    Transaction.AUTO_COMMIT);
             //写记录  
-            SimpleFeatureIterator it = sfs.getFeatures().features();  
-            try {  
+            SimpleFeatureIterator it = sfs.getFeatures().features();
+            try {
                 while (it.hasNext()) {
-                    SimpleFeature feature = it.next();  
-                    SimpleFeature fNew = writer.next();  
-                    fNew.setAttributes(feature.getAttributes());  
-                    writer.write();  
-                }  
-            } finally {  
-                it.close();  
-            }  
-            writer.close();  
-            ds.dispose();  
+                    SimpleFeature feature = it.next();
+                    SimpleFeature fNew = writer.next();
+                    fNew.setAttributes(feature.getAttributes());
+                    writer.write();
+                }
+            } finally {
+                it.close();
+            }
+            writer.close();
+            ds.dispose();
             return true;
         } catch (IOException ex) {
             Logger.getLogger(ShapefileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
+
     //write test case
-    public void writeShpTest(){
+    public void writeShpTest() {
         try {
             File file = JFileDataStoreChooser.showOpenFile("shp", null);
             if (file == null) {
@@ -113,47 +118,47 @@ public class ShapefileManager {
             }
             FileDataStore store = FileDataStoreFinder.getDataStore(file);
             SimpleFeatureSource featureSource = store.getFeatureSource();
-            
+
             // Create a map content and add our shapefile to it
             Style style = SLD.createSimpleStyle(featureSource.getSchema());
             Layer layer = new FeatureLayer(featureSource, style);
-            if (this.writeShpToFile(layer, "D://test.shp"))
+            if (this.writeShpToFile(layer, "D://test.shp")) {
                 System.out.println("written down");
+            }
         } catch (IOException ex) {
             Logger.getLogger(ShapefileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //read test case
-    public void readShpTest(JMapPane mapPane,FProject fp){
+    public void readShpTest(JMapPane mapPane, FProject fp) {
         try {
-          File file = JFileDataStoreChooser.showOpenFile("shp", null);
+            File file = JFileDataStoreChooser.showOpenFile("shp", null);
             SimpleFeatureSource sfs = this.readShpFromFile(file);
-            SimpleFeatureIterator iterator = sfs.getFeatures().features();    
+            SimpleFeatureIterator iterator = sfs.getFeatures().features();
             Style style = SLD.createSimpleStyle(sfs.getSchema());
             Layer layer = new FeatureLayer(sfs, style);
             //----------------------------------------------
-            if(mapPane.getMapContent()!=null){
+            if (mapPane.getMapContent() != null) {
                 mapPane.getMapContent().addLayer(layer);
                 fp.addLayer(layer.getTitle());
                 mapPane.repaint();
-            }
-            else{
-                MapContent newMapContent=new MapContent();
+            } else {
+                MapContent newMapContent = new MapContent();
                 newMapContent.addLayer(layer);
                 fp.addLayer(layer.getTitle());
                 mapPane.setMapContent(newMapContent);
-            }            
-            
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(ShapefileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
 //        ReadShapefile reader = new ReadShapefile();
 //        reader.readShpTest();
-FFeatureManager_Test.addFeatureToLayerTest();
+        FFeatureManager_Test.addFeatureToLayerTest();
         ShapefileManager sm = new ShapefileManager();
         sm.writeShpTest();
     }

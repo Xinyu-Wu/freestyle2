@@ -13,6 +13,16 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -39,6 +49,9 @@ public class Main_win extends javax.swing.JFrame {
     private Style originStyle=null;
     public FProject mFProject=null;
     
+    private HashMap<String, String> serverConfig;
+    private Socket socket_upload;
+    private Socket socket_download;
     /**
      * Creates new form Main_win
      */
@@ -106,8 +119,6 @@ public class Main_win extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         mapLayerTable1 = new org.geotools.swing.MapLayerTable();
         jMapPane3 = new org.geotools.swing.JMapPane();
-        jScrollBar1 = new javax.swing.JScrollBar();
-        jScrollBar2 = new javax.swing.JScrollBar();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jtbEdit = new javax.swing.JToggleButton();
@@ -119,6 +130,10 @@ public class Main_win extends javax.swing.JFrame {
         jEditorPane1 = new javax.swing.JEditorPane();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jToolBar3 = new javax.swing.JToolBar();
+        jButton6 = new javax.swing.JButton();
+        Upload_Button = new javax.swing.JButton();
+        Download_Button = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         Project = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
@@ -256,23 +271,15 @@ public class Main_win extends javax.swing.JFrame {
             }
         });
 
-        jScrollBar2.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
-
         javax.swing.GroupLayout jMapPane3Layout = new javax.swing.GroupLayout(jMapPane3);
         jMapPane3.setLayout(jMapPane3Layout);
         jMapPane3Layout.setHorizontalGroup(
             jMapPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jMapPane3Layout.createSequentialGroup()
-                .addComponent(jScrollBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 944, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jMapPane3Layout.setVerticalGroup(
             jMapPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
-            .addGroup(jMapPane3Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 736, Short.MAX_VALUE)
         );
 
         jTextField1.setEditable(false);
@@ -295,22 +302,24 @@ public class Main_win extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 463, Short.MAX_VALUE)
                         .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(73, 73, 73))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jMapPane3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mapLayerTable1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap()
+                        .addComponent(mapLayerTable1, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -346,7 +355,7 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
@@ -371,6 +380,47 @@ public class Main_win extends javax.swing.JFrame {
         );
 
         jButton5.setText("jButton5");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jToolBar3.setRollover(true);
+
+        jButton6.setText("ServerCfg");
+        jButton6.setFocusable(false);
+        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jToolBar3.add(jButton6);
+
+        Upload_Button.setText("Upload");
+        Upload_Button.setFocusable(false);
+        Upload_Button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        Upload_Button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        Upload_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Upload_ButtonActionPerformed(evt);
+            }
+        });
+        jToolBar3.add(Upload_Button);
+
+        Download_Button.setText("Download");
+        Download_Button.setToolTipText("");
+        Download_Button.setFocusable(false);
+        Download_Button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        Download_Button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        Download_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Download_ButtonActionPerformed(evt);
+            }
+        });
+        jToolBar3.add(Download_Button);
 
         Project.setText("Project");
 
@@ -423,22 +473,25 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(421, 421, 421)
-                        .addComponent(jtbEdit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(1, 1, 1)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(421, 421, 421)
+                                .addComponent(jtbEdit)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton5)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -450,7 +503,8 @@ public class Main_win extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtbEdit)
@@ -461,6 +515,22 @@ public class Main_win extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void connectServer2Upload(String ip, int port){
+        try {
+            socket_upload = new Socket(ip, port);
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void connectServer2Download(String ip, int port){
+        try {
+            socket_download = new Socket(ip, port);
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     // 放大
     private void ZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomInActionPerformed
@@ -604,6 +674,68 @@ lineend.y=(evt.getY());
         // TODO add your handling code here:
         
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void Upload_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Upload_ButtonActionPerformed
+        try {
+            // TODO add your handling code here:
+            connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
+            //ccy todo
+            BufferedImage image = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = image.getGraphics();
+            if (jMapPane3.getMapContent() != null) {
+                ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
+                Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+            }
+//            g.drawImage(image, 0, 0, null);
+            ImageIO.write(image, "jpg", new File("test.jpg"));
+//            BufferedImage image = ImageIO.read(new File("C:\\Users\\wuxinyu\\Pictures\\Server\\penguins.jpg"));
+            OutputStream os = socket_upload.getOutputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", output);
+            os.write(output.toByteArray());
+            os.flush();
+//            socket_upload.shutdownOutput();
+            socket_upload.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_Upload_ButtonActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        ServerConfig configFrame = new ServerConfig();
+        configFrame.setVisible(true);
+        serverConfig = new HashMap<>();
+        serverConfig = configFrame.getServerConfig();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void Download_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Download_ButtonActionPerformed
+        InputStream is = null;
+        try {
+            // TODO add your handling code here:
+            connectServer2Download(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_download")));
+            BufferedImage tempImage = null;
+            is = socket_download.getInputStream();
+            tempImage = ImageIO.read(is);
+            Graphics g = jMapPane3.getGraphics();
+            g.drawImage(tempImage, 0, 0, null);
+            jMapPane3.repaint();
+            socket_download.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_Download_ButtonActionPerformed
     
     /**
      * @param args the command line arguments
@@ -657,6 +789,7 @@ lineend.y=(evt.getY());
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Define_Projection;
+    private javax.swing.JButton Download_Button;
     private javax.swing.JMenuItem Exit;
     private javax.swing.JMenu Geoprocessing;
     private javax.swing.JMenu Help;
@@ -664,6 +797,7 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem Open;
     private javax.swing.JMenu Project;
     private javax.swing.JMenuItem Save;
+    private javax.swing.JButton Upload_Button;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
@@ -676,6 +810,7 @@ lineend.y=(evt.getY());
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JEditorPane jEditorPane1;
@@ -687,8 +822,6 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollBar jScrollBar1;
-    private javax.swing.JScrollBar jScrollBar2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField1;
@@ -696,6 +829,7 @@ lineend.y=(evt.getY());
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JToolBar jToolBar3;
     private javax.swing.JToggleButton jtbEdit;
     private org.geotools.swing.MapLayerTable mapLayerTable1;
     // End of variables declaration//GEN-END:variables

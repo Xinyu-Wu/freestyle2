@@ -3,12 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/ServerConfig.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/OBForm.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/Main_win.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/datasource/ShapefileManager.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/FLogin.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/datasource/DBManager.java</file>
+            <file>file:/C:/Users/secre/Downloads/freestyle2_copy/freestyle2/src/cn/edu/pku/gui/Main_win.java</file>
+            <file>file:/C:/Users/secre/Downloads/freestyle2_copy/freestyle2/src/cn/edu/pku/gui/OpenFProject.java</file>
+            <file>file:/C:/Users/secre/Downloads/freestyle2_copy/freestyle2/src/cn/edu/pku/datasource/DrawEditingFeature.java</file>
+            <file>file:/C:/Users/secre/Downloads/freestyle2_copy/freestyle2/src/cn/edu/pku/gui/ShowLayerStatus.java</file>
+            <file>file:/C:/Users/secre/Downloads/freestyle2_copy/freestyle2/src/cn/edu/pku/gui/FLogin.java</file>
         </group>
     </open-files>
 </project-private>

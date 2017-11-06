@@ -6,6 +6,7 @@
 package cn.edu.pku.gui;
 
 import javax.swing.JFrame;
+import org.geotools.map.Layer;
 
 /**
  *
@@ -16,18 +17,20 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     /**
      * Creates new form ShowLayerStatus
      */
-    public ShowLayerStatus() {
-        initComponents();
-        this.setLocationRelativeTo(null);//屏幕中间显示
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
-    }
+    Main_win main;
     
-    public ShowLayerStatus(String Project) {
+    public ShowLayerStatus(Main_win fMain) {
         initComponents();
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
-        
-        
+        main=fMain;
+    }
+
+    public ShowLayerStatus(String Project,Main_win fMain) {
+        initComponents();
+        this.setLocationRelativeTo(null);//屏幕中间显示
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
+        main=fMain;
     }
 
     /**
@@ -117,20 +120,29 @@ public class ShowLayerStatus extends javax.swing.JFrame {
 
     private void btnWLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWLActionPerformed
         // TODO add your handling code here:
-        String layer=jListWL.getSelectedValue();
+        String layer = jListWL.getSelectedValue();
         //fyn：传给服务器申请权限，申请好要enablesaveEditing按钮
     }//GEN-LAST:event_btnWLActionPerformed
 
     private void btnOBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOBActionPerformed
         // TODO add your handling code here:
-        String layer=jListOB.getSelectedValue();
+        String layer = jListOB.getSelectedValue();
         //fyn：传给服务器申请权限
     }//GEN-LAST:event_btnOBActionPerformed
 
+    
+    /**
+     * StartEditing
+     */
+    private void StartEditing(String Layername){
+        main.StartEditing(Layername);
+    }
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    
+    
+        public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -157,11 +169,11 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShowLayerStatus().setVisible(true);
+                //new ShowLayerStatus().setVisible(true);
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOB;
     private javax.swing.JButton btnWL;

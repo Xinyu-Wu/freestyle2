@@ -6,6 +6,8 @@
 package cn.edu.pku.gui;
 
 import FProject.FProject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -167,7 +169,12 @@ public class OpenFProject extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Main_win main=new Main_win("test");
+                Main_win main = null;
+                try {
+                    main = new Main_win("test");
+                } catch (Exception ex) {
+                    Logger.getLogger(OpenFProject.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 new OpenFProject(main).setVisible(true);
             }
         });

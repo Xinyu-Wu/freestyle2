@@ -22,6 +22,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import com.vividsolutions.jts.io.WKTReader;
+import java.awt.BasicStroke;
 import java.io.IOException;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
@@ -67,6 +68,9 @@ public class DrawEditingFeature {
     private Point evtnowPoint;
     private ArrayList<Point> pointsList;
     private ArrayList<Coordinate> coordinatesList;
+    private ArrayList<LineString> polylines;
+    private ArrayList<Polygon> polygons;
+    private ArrayList<java.awt.Polygon> drawPolygons;
     private BufferedImage cache;
     private JMapPane drawPane;
     private int type;
@@ -75,7 +79,6 @@ public class DrawEditingFeature {
     private Layer linelLayer;
     private Layer polygon;
     private SimpleFeature lastsimplefeature;*/
-
     public DrawEditingFeature(JMapPane mapPane) throws SchemaException, ParseException, ParseException, ParseException, Exception {
 
         drawPane = mapPane;
@@ -84,6 +87,7 @@ public class DrawEditingFeature {
         evtnowPoint = new Point();
         pointsList = new ArrayList<Point>();
         coordinatesList = new ArrayList<Coordinate>();
+        drawPolygons = new ArrayList<>();
         type = 2;
         //@create bufferimage
         BufferedImage newCache = new BufferedImage(mapPane.getWidth(), mapPane.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -95,41 +99,71 @@ public class DrawEditingFeature {
         //  ds.setCharset(Charset.forName("GBK"));  
     }
 
-    //@设置编辑的数据类型
-    public void SetFeatureType(String FeatureType) {
-        if (FeatureType == "Point") {
+    /**
+     * 开始编辑
+     *
+     *
+     * @ 设置编辑的数据类型 *
+     */
+    public void StartEditing(String FeatureType) {
+        //todo 重置画布&设置背景
+        CleanBufferImage();
+        if (FeatureType.contains("Point")) {
             type = 0;
-        } else if (FeatureType == "PolyLine") {
+        } else if (FeatureType.contains("Line")) {
             type = 1;
-        } else if (FeatureType == "Polygon") {
+        } else if (FeatureType.contains("Polygon")) {
             type = 2;
+        }
+    }
+
+    /**
+     * 结束编辑
+     *
+     */
+    public void EndEditing() throws IllegalAccessException, InstantiationException, IOException {
+        //CoverNewLayer();
+
+        if (type == 0) {
+
+        } else if (type == 1) {
+
+        } else if (type == 2) {
+
         }
     }
 
     /**
      * @鼠标选点 @param evt 鼠标事件
      */
-    public void MouseClicked(java.awt.event.MouseEvent evt) {
+    public void MouseClicked(java.awt.event.MouseEvent evt) throws Exception {
         // TODO add your handling code here:
-        try {
-            if (evt.getClickCount() == 2) {
-                if (type == 2) {
-                    pointsList.add(pointsList.get(0));
-                    coordinatesList.add(coordinatesList.get(0));
-                }
-                //TODO add transform function
-                pointsList.clear();
-                coordinatesList.clear();
-            } else {
-                lastPoint = evt.getPoint();
-                pointsList.add(lastPoint);
-                Coordinate lastcoor = FTranslatePoint.ScreenToWorld(lastPoint, drawPane.getMapContent().getViewport());
-                coordinatesList.add(lastcoor);
+        if (evt.getClickCount() == 2) {
+            if (type == 1) {
+                LineString newPolyline = GeometryManager.createOneLineString(ArrayListtoArray.CoordinatetoArrayDoubleLat(coordinatesList), ArrayListtoArray.CoordinatetoArrayDoubleLon(coordinatesList));
+                polylines.add(newPolyline);
+                DrawPolylineFeature(true);
+            } else if (type == 2) {
+                pointsList.add(pointsList.get(0));
+                coordinatesList.add(coordinatesList.get(0));
+                Polygon newpolygon = GeometryManager.createOnePolygon(ArrayListtoArray.CoordinatetoArrayDoubleLat(coordinatesList), ArrayListtoArray.CoordinatetoArrayDoubleLon(coordinatesList));
+                polygons.add(newpolygon);
+                java.awt.Polygon newdrawPolygon = new java.awt.Polygon(ArrayListtoArray.PointtoArrayIntX(pointsList), ArrayListtoArray.PointtoArrayIntY(pointsList), pointsList.size());
+                drawPolygons.add(newdrawPolygon);
+                DrawPolygonFeature(true);
+            }
+            //TODO add transform function
+            pointsList.clear();
+            coordinatesList.clear();
+        } else {
+            lastPoint = evt.getPoint();
+            pointsList.add(lastPoint);
+            Coordinate lastcoor = FTranslatePoint.ScreenToWorld(lastPoint, drawPane.getMapContent().getViewport());
+            coordinatesList.add(lastcoor);
+            if (type == 0) {
                 DrawPointFeature(lastPoint);
             }
-        } catch (Exception e) {
         }
-
     }
 
     /**
@@ -141,9 +175,9 @@ public class DrawEditingFeature {
             evtlastPoint = evtnowPoint;
             evtnowPoint = evt.getPoint();
             if (type == 1) {
-                DrawPolylineFeature();
+                DrawPolylineFeature(false);
             } else {
-                DrawPolygonFeature();
+                DrawPolygonFeature(false);
             }
 
         }
@@ -175,8 +209,8 @@ public class DrawEditingFeature {
     private void DrawPointFeature(Point lastPoint) {
         if (cache != null) {
             Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-            g.setColor(java.awt.Color.black);
-            g.fillOval((int) lastPoint.x, (int) lastPoint.y, 5, 5);
+            g.setColor(java.awt.Color.red);
+            g.fillOval((int) lastPoint.x, (int) lastPoint.y, 8, 8);
 //-----------------------------------------------------------------------
             Graphics g_orig = drawPane.getGraphics();
             if (drawPane.getMapContent() != null) {
@@ -189,55 +223,111 @@ public class DrawEditingFeature {
         }
     }
 
+    
     /**
      * @在画布上添加线图层
      */
-    private void DrawPolylineFeature() {
-        if (cache != null && pointsList.size() > 0) {
-            Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-            //elastic-------------------------------------------------------
-            g.setColor(java.awt.Color.WHITE);
-            g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
-            g.setColor(java.awt.Color.RED);
-            g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
-            //---------------------------------------------------------------
-            g.setColor(java.awt.Color.yellow);
-            int[] x = ArrayListtoArray.PointtoArrayIntX(pointsList);
-            int[] y = ArrayListtoArray.PointtoArrayIntY(pointsList);
-            g.drawPolyline(x, y, x.length);
-            //-----------------------------------------------------------------------
-            Graphics g_orig = drawPane.getGraphics();
-            if (drawPane.getMapContent() != null) {
-                ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
-                Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
-                drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+    private void DrawPolylineFeature(boolean isdone) {
+        if (!isdone) {
+            if (cache != null && pointsList.size() > 0) {
+                Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图
+                //elastic-------------------------------------------------------------
+                BasicStroke bs = new BasicStroke(8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+                g.setStroke(bs);
+                g.setColor(java.awt.Color.WHITE);
+                g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
+                g.setColor(java.awt.Color.RED);
+                g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
+                //---------------------------------------------------------------
+                g.setColor(java.awt.Color.yellow);
+                int[] x = ArrayListtoArray.PointtoArrayIntX(pointsList);
+                int[] y = ArrayListtoArray.PointtoArrayIntY(pointsList);
+                g.drawPolyline(x, y, x.length);
+                //-----------------------------------------------------------------------
+                Graphics g_orig = drawPane.getGraphics();
+                if (drawPane.getMapContent() != null) {
+                    ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
+                    Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                }
+                g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
+                g_orig.drawImage(cache, 0, 0, null);
             }
-            g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
-            g_orig.drawImage(cache, 0, 0, null);
+        }
+        else{
+            if (cache != null && pointsList.size() > 0) {
+                Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图
+                BasicStroke bs = new BasicStroke(8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+                g.setStroke(bs);
+                g.setColor(java.awt.Color.yellow);
+                int[] x = ArrayListtoArray.PointtoArrayIntX(pointsList);
+                int[] y = ArrayListtoArray.PointtoArrayIntY(pointsList);
+                g.drawPolyline(x, y, x.length);
+                //-----------------------------------------------------------------------
+                Graphics g_orig = drawPane.getGraphics();
+                if (drawPane.getMapContent() != null) {
+                    ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
+                    Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                }
+                g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
+                g_orig.drawImage(cache, 0, 0, null);
+            }
         }
     }
 
     /**
      * @在画布上添加面图层
      */
-    private void DrawPolygonFeature() {
-        if (cache != null && pointsList.size() > 0) {
-            Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-            //elastic-------------------------------------------------------------
-            g.setColor(java.awt.Color.WHITE);
-            g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
-            g.drawLine(pointsList.get(0).x, pointsList.get(0).y, (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
-            g.setColor(java.awt.Color.RED);
-            g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
-            g.drawLine(pointsList.get(0).x, pointsList.get(0).y, (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
-            //-----------------------------------------------------------------------------------------------------
-            g.setColor(java.awt.Color.red);
-            int[] x = ArrayListtoArray.PointtoArrayIntX(pointsList);
-            int[] y = ArrayListtoArray.PointtoArrayIntY(pointsList);
-            g.drawPolyline(x, y, x.length);
-            g.setColor(Color.blue);
-            //g.fillPolygon(x, y, x.length);
-            //-----------------------------------------------------------------------
+    private void DrawPolygonFeature(boolean isdone) {
+        if (!isdone) {
+            if (cache != null && pointsList.size() > 0) {
+                Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图
+                //elastic-------------------------------------------------------------
+                BasicStroke bs = new BasicStroke(10f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+                g.setStroke(bs);
+                g.setColor(java.awt.Color.WHITE);
+                g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
+                g.drawLine(pointsList.get(0).x, pointsList.get(0).y, (int) evtlastPoint.getX(), (int) evtlastPoint.getY());
+                //g.setStroke(bs_2);
+                g.setColor(java.awt.Color.RED);
+                g.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(), (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
+                g.drawLine(pointsList.get(0).x, pointsList.get(0).y, (int) evtnowPoint.getX(), (int) evtnowPoint.getY());
+                //-----------------------------------------------------------------------------------------------------
+                // g.setStroke(bs_3);
+                g.setColor(java.awt.Color.red);
+                int[] x = ArrayListtoArray.PointtoArrayIntX(pointsList);
+                int[] y = ArrayListtoArray.PointtoArrayIntY(pointsList);
+                g.drawPolyline(x, y, x.length);
+                g.setColor(Color.blue);
+                //g.fillPolygon(x, y, x.length);
+                //------------------------------------------------------------------------------------------------------
+
+                g.setColor(Color.yellow);
+                for (int i = 0; i < polygons.size(); i++) {
+                    g.drawPolygon(drawPolygons.get(i));
+                }
+                //------------------------------------------------------------------------------------------------------
+                Graphics g_orig = drawPane.getGraphics();
+                if (drawPane.getMapContent() != null) {
+                    ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
+                    Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
+                    //AffineTransform affineTransform=drawPane.getWorldToScreenTransform();
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                }
+                g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
+                g_orig.drawImage(cache, 0, 0, null);
+            }
+        } else {
+            Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图               
+            //-----------------------------------------------------------------------------------------------------                
+            BasicStroke bs = new BasicStroke(10f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+            g.setStroke(bs);
+            g.setColor(Color.yellow);
+            for (int i = 0; i < polygons.size(); i++) {
+                g.drawPolygon(drawPolygons.get(i));
+            }
+            //------------------------------------------------------------------------------------------------------
             Graphics g_orig = drawPane.getGraphics();
             if (drawPane.getMapContent() != null) {
                 ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
@@ -249,7 +339,6 @@ public class DrawEditingFeature {
             g_orig.drawImage(cache, 0, 0, null);
         }
     }
-
     /**
      * @deprecated
      */
@@ -270,7 +359,7 @@ public class DrawEditingFeature {
     public void CoverNewLayer() {
         int size = drawPane.getMapContent().layers().size() - 1;
         Layer newLayer = drawPane.getMapContent().layers().get(size);
-        SimpleFeatureType TYPE=(SimpleFeatureType)newLayer.getFeatureSource().getSchema();
+        SimpleFeatureType TYPE = (SimpleFeatureType) newLayer.getFeatureSource().getSchema();
         ListFeatureCollection collection = new ListFeatureCollection(TYPE);
         //TODO add geometry to collection(simpleFeatureManege Update)
         //Change Style

@@ -363,9 +363,11 @@ public class DrawEditingFeature {
         ListFeatureCollection collection = new ListFeatureCollection(TYPE);
         //TODO add geometry to collection(simpleFeatureManege Update)
         //Change Style
+        //write shp then read it
         FeatureLayer layer = new FeatureLayer(collection, null, newLayer.getTitle());
         drawPane.getMapContent().removeLayer(newLayer);
         drawPane.getMapContent().addLayer(layer);
+        
     }
     /*
     //TODO clean bitmap

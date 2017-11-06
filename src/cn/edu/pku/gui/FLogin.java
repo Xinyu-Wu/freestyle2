@@ -306,7 +306,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 return true;
             } catch (Exception ex) {
                 Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
+               
+                return false;                
             }
         } else {
             JOptionPane.showMessageDialog(null, "用户名或密码错误！\n 请重新输入！", "FreeStyle", JOptionPane.ERROR_MESSAGE);

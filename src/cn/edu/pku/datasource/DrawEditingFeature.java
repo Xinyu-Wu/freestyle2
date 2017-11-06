@@ -22,11 +22,19 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import com.vividsolutions.jts.io.WKTReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.scene.text.Font;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureWriter;
+import org.geotools.data.FileDataStoreFactorySpi;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -306,8 +314,29 @@ public class DrawEditingFeature {
                 SimpleFeatureManager.addGeometriesToSimpleFeatureSource((SimpleFeatureSource) collection, polylines.toArray(new LineString[1]));
                 break;
             case 2:
-                
-                SimpleFeatureManager.addGeometriesToSimpleFeatureSource((SimpleFeatureSource) collection, polygons.toArray(new Polygon[1]));
+                        SimpleFeatureType featureType = collection.getSchema();
+                        Map<String, Serializable> params = new HashMap<>();
+                        FileDataStoreFactorySpi factory = new org.geotools.data.shapefile.ShapefileDataStoreFactory();
+                        params.put(org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP.key, new File("path.shp").toURI().toURL());
+                        ShapefileDataStore ds = (ShapefileDataStore) factory.createNewDataStore(params);
+                        //SimpleFeatureSource featureSource = (SimpleFeatureSource) new DefaultFeatureCollection();
+                        ds.createSchema(featureType);
+                        FeatureWriter<SimpleFeatureType, SimpleFeature> writer = ds.getFeatureWriter(ds.getTypeNames()[0], Transaction.AUTO_COMMIT);
+                        SimpleFeatureIterator it = collection.features();
+                        try {
+                            while (it.hasNext()) {
+                                SimpleFeature feature = it.next();
+                                SimpleFeature fNew = writer.next();
+                                fNew.setAttributes(feature.getAttributes());
+                                writer.write();
+                            }
+                        } finally {
+                            it.close();
+                        }
+                        writer.close();
+                        SimpleFeatureSource returnSource = ds.getFeatureSource();
+                        ds.dispose();
+                SimpleFeatureManager.addGeometriesToSimpleFeatureSource(returnSource, polygons.toArray(new Polygon[1]));
                 //for(int i=0;i<polygons.size();i++)
                 //{
                     

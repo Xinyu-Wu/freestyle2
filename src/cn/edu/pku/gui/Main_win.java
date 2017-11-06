@@ -37,6 +37,7 @@ import org.geotools.swing.tool.ZoomInTool;
 import org.geotools.swing.tool.ZoomOutTool;
 import javax.imageio.ImageIO;
 import javax.media.jai.GraphicsJAI;
+import org.geotools.data.simple.SimpleFeatureCollection;
 /**
  *
  * @author weizy
@@ -512,7 +513,7 @@ public class Main_win extends javax.swing.JFrame {
             }
         } else {
             Editing = true;            
-            drawEditingFeature.StartEditing("Point");
+            drawEditingFeature.StartEditing("Polygon");
         }
     }//GEN-LAST:event_jtbEditActionPerformed
 
@@ -565,6 +566,7 @@ public class Main_win extends javax.swing.JFrame {
         BufferedImage test = ImageIO.read(sourceimage);
         Graphics g = test.getGraphics(); //替换Graphics，转往缓存上画图       
         g.drawImage(test, 0, 0,jMapPane3);
+
     }
             
     

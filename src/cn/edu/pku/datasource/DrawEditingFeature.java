@@ -23,7 +23,6 @@ import org.geotools.swing.JMapPane;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
-import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -67,6 +66,8 @@ public class DrawEditingFeature {
     private Point evtnowPoint;
     private ArrayList<Point> pointsList;
     private ArrayList<Coordinate> coordinatesList;
+    private ArrayList<LineString> polylines;
+    private ArrayList<Polygon> polygons;
     private BufferedImage cache;
     private JMapPane drawPane;
     private int type;
@@ -75,7 +76,6 @@ public class DrawEditingFeature {
     private Layer linelLayer;
     private Layer polygon;
     private SimpleFeature lastsimplefeature;*/
-
     public DrawEditingFeature(JMapPane mapPane) throws SchemaException, ParseException, ParseException, ParseException, Exception {
 
         drawPane = mapPane;
@@ -83,8 +83,10 @@ public class DrawEditingFeature {
         evtlastPoint = new Point();
         evtnowPoint = new Point();
         pointsList = new ArrayList<Point>();
+        polylines = new ArrayList<>();
+        polygons = new ArrayList<>();
         coordinatesList = new ArrayList<Coordinate>();
-        type = 2;
+        type = 0;
         //@create bufferimage
         BufferedImage newCache = new BufferedImage(mapPane.getWidth(), mapPane.getHeight(), BufferedImage.TYPE_INT_ARGB);
         if (cache != null) {
@@ -95,41 +97,63 @@ public class DrawEditingFeature {
         //  ds.setCharset(Charset.forName("GBK"));  
     }
 
-    //@设置编辑的数据类型
-    public void SetFeatureType(String FeatureType) {
-        if (FeatureType == "Point") {
+    /**
+     * 开始编辑
+     *
+     * @ 设置编辑的数据类型
+    *
+     */
+    public void StartEditing(String FeatureType) {
+        //todo 重置画布&设置背景
+        if ("Point".equals(FeatureType)) {
             type = 0;
-        } else if (FeatureType == "PolyLine") {
+        } else if ("LineString".equals(FeatureType)) {
             type = 1;
-        } else if (FeatureType == "Polygon") {
+        } else if ("Polygon".equals(FeatureType)) {
             type = 2;
+        }
+    }
+
+    /**
+     * 结束编辑
+     *
+     */
+    public void EndEditing() throws IllegalAccessException, InstantiationException, IOException {
+        CoverNewLayer();
+        if (type == 0) {
+
+        } else if (type == 1) {
+
+        } else if (type == 2) {
+
         }
     }
 
     /**
      * @鼠标选点 @param evt 鼠标事件
      */
-    public void MouseClicked(java.awt.event.MouseEvent evt) {
+    public void MouseClicked(java.awt.event.MouseEvent evt) throws Exception {
         // TODO add your handling code here:
-        try {
-            if (evt.getClickCount() == 2) {
-                if (type == 2) {
-                    pointsList.add(pointsList.get(0));
-                    coordinatesList.add(coordinatesList.get(0));
-                }
-                //TODO add transform function
-                pointsList.clear();
-                coordinatesList.clear();
-            } else {
-                lastPoint = evt.getPoint();
-                pointsList.add(lastPoint);
-                Coordinate lastcoor = FTranslatePoint.ScreenToWorld(lastPoint, drawPane.getMapContent().getViewport());
-                coordinatesList.add(lastcoor);
-                DrawPointFeature(lastPoint);
+        if (evt.getClickCount() == 2) {
+            if (type == 1) {
+                LineString newPolyline = GeometryManager.createOneLineString(ArrayListtoArray.CoordinatetoArrayDoubleLat(coordinatesList), ArrayListtoArray.CoordinatetoArrayDoubleLon(coordinatesList));
+                polylines.add(newPolyline);
+            } else if (type == 2) {
+                pointsList.add(pointsList.get(0));
+                coordinatesList.add(coordinatesList.get(0));
+                Polygon newpolygon = GeometryManager.createOnePolygon(ArrayListtoArray.CoordinatetoArrayDoubleLat(coordinatesList), ArrayListtoArray.CoordinatetoArrayDoubleLon(coordinatesList));
+                polygons.add(newpolygon);
             }
-        } catch (Exception e) {
+            //TODO add transform function
+            pointsList.clear();
+            coordinatesList.clear();
+        } else {
+            lastPoint = evt.getPoint();
+            pointsList.add(lastPoint);
+            Coordinate lastcoor = FTranslatePoint.ScreenToWorld(lastPoint, drawPane.getMapContent().getViewport());
+            coordinatesList.add(lastcoor);
+            DrawPointFeature(lastPoint);
         }
-
     }
 
     /**
@@ -267,13 +291,33 @@ public class DrawEditingFeature {
         }
     }
 
-    public void CoverNewLayer() {
+    public void CoverNewLayer() throws IllegalAccessException, InstantiationException, IOException {
         int size = drawPane.getMapContent().layers().size() - 1;
         Layer newLayer = drawPane.getMapContent().layers().get(size);
-        SimpleFeatureType TYPE=(SimpleFeatureType)newLayer.getFeatureSource().getSchema();
+        SimpleFeatureType TYPE = (SimpleFeatureType) newLayer.getFeatureSource().getSchema();
         ListFeatureCollection collection = new ListFeatureCollection(TYPE);
         //TODO add geometry to collection(simpleFeatureManege Update)
         //Change Style
+        switch (type) {
+            case 0:
+
+                break;
+            case 1:
+                SimpleFeatureManager.addGeometriesToSimpleFeatureSource((SimpleFeatureSource) collection, polylines.toArray(new LineString[1]));
+                break;
+            case 2:
+                
+                SimpleFeatureManager.addGeometriesToSimpleFeatureSource((SimpleFeatureSource) collection, polygons.toArray(new Polygon[1]));
+                //for(int i=0;i<polygons.size();i++)
+                //{
+                    
+                    //collection.add( )
+                //}
+                break;
+            default:
+
+                break;
+        }
         FeatureLayer layer = new FeatureLayer(collection, null, newLayer.getTitle());
         drawPane.getMapContent().removeLayer(newLayer);
         drawPane.getMapContent().addLayer(layer);

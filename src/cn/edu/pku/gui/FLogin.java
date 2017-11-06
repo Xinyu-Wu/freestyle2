@@ -12,6 +12,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 
@@ -97,7 +99,11 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
             public void keyPressed(KeyEvent e){
                 if(e.getKeyChar()==KeyEvent.VK_ENTER)
                 {
-                    login();
+                    try {
+                        login();
+                    } catch (Exception ex) {
+                        Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         };
@@ -134,7 +140,13 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
         switch(e.getActionCommand())
         {
             case "登录":
+        {
+            try {
                 login();
+            } catch (Exception ex) {
+                Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
                 break;
             case "注册":
                 register();
@@ -145,7 +157,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener{
         }
     }
     
-    public void login(){
+    public void login() throws Exception{
         System.out.println("cn.edu.pku.gui.FLogin.login()");
         if(userLogin(jtfID.getText(),jpf.getText()))
         {

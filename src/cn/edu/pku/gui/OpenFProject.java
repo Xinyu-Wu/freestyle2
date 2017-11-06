@@ -178,6 +178,7 @@ public class OpenFProject extends javax.swing.JFrame {
                 new OpenFProject(main).setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

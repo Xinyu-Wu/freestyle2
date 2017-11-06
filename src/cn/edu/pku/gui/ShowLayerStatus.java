@@ -133,6 +133,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     
     /**
      * StartEditing
+     * 或许传名称并不可行，可以试着传geometrydescription
      */
     private void StartEditing(String Layername){
         main.StartEditing(Layername);

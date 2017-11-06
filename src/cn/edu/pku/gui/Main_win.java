@@ -587,15 +587,17 @@ public class Main_win extends javax.swing.JFrame {
         if (isEditing == true) {
             setBackground(java.awt.Color.white);
             drawEditingFeature.MouseMoved(evt);
+            
         }
     }//GEN-LAST:event_jMapPane3MouseMoved
 
     /**
      * StartEditing
+     * 或许传名称并不可行，可以试着传geometrydescription
      */
     public void StartEditing(String Layername){
         isEditing=true;
-        
+        //-------------------------------------------------------------------------
         Layer editlayer= jMapPane3.getMapContent().layers().get(0);
         String type= editlayer.getFeatureSource().getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
         drawEditingFeature.StartEditing(type);
@@ -606,7 +608,7 @@ public class Main_win extends javax.swing.JFrame {
      */
     public void EndEditing(){
         isEditing=false;
-        
+        //--------------------------------------------------------------------------
         try {
             drawEditingFeature.EndEditing();
         } catch (IllegalAccessException ex) {

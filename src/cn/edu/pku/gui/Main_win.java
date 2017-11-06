@@ -1,9 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cn.edu.pku.gui;
+
 import FProject.FProject;
 import FeatureEdit.FeatureSelection;
 import cn.edu.pku.datasource.ShapefileManager;
@@ -13,6 +9,16 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -28,7 +34,6 @@ import org.geotools.swing.tool.PanTool;
 import org.geotools.swing.tool.ZoomInTool;
 import org.geotools.swing.tool.ZoomOutTool;
 
-
 /**
  *
  * @author weizy
@@ -36,10 +41,14 @@ import org.geotools.swing.tool.ZoomOutTool;
 public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
-    private boolean isEditing =false;
-    private Style originStyle=null;
-    public FProject mFProject=null;
-    
+    private boolean isEditing = false;
+    private Style originStyle = null;
+    public FProject mFProject = null;
+
+    private HashMap<String, String> serverConfig;
+    private Socket socket_upload;
+    private Socket socket_download;
+
     /**
      * Creates new form Main_win
      */
@@ -47,39 +56,38 @@ public class Main_win extends javax.swing.JFrame {
         initComponents();
         this.setTitle("Freestyle");
         this.setLocationRelativeTo(null);
-        
-        FeatureEdit.FeatureSelection fs=new FeatureSelection();
+
+        FeatureEdit.FeatureSelection fs = new FeatureSelection();
         System.out.println("works!");
         this.jButton15.addActionListener(e -> jMapPane3.setCursorTool(
                 new CursorTool() {
 
-                    @Override
-                    public void onMouseClicked(MapMouseEvent ev) {
-                        if(isSelected==true)
-                        {
-                            if(jMapPane3.getMapContent().layers().isEmpty()==false)
-                            {
-                                fs.featureSource = (SimpleFeatureSource) jMapPane3.getMapContent().layers().get(0).getFeatureSource();
-                                fs.setGeometry();
-                                fs.selectFeatures(ev,jMapPane3,originStyle);
-                            }
-                            
-                        }                        
+            @Override
+            public void onMouseClicked(MapMouseEvent ev) {
+                if (isSelected == true) {
+                    if (jMapPane3.getMapContent().layers().isEmpty() == false) {
+                        fs.featureSource = (SimpleFeatureSource) jMapPane3.getMapContent().layers().get(0).getFeatureSource();
+                        fs.setGeometry();
+                        fs.selectFeatures(ev, jMapPane3, originStyle);
                     }
-                }));
+
+                }
+            }
+        }));
         jMapPane3.setBackground(java.awt.Color.white);
         this.start = new Point(0, 0);
         this.end = new Point(0, 0);
         this.linestart = new Point(0, 0);
         this.lineend = new Point(0, 0);
         this.temp = new Point(0, 0);
-        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(),  BufferedImage.TYPE_INT_ARGB);
-        if(cache!=null) { //把上个缓存的内容画到新缓存上
-        //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
-        newCache.createGraphics().drawImage(cache, 0, 0, null);
+        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        if (cache != null) { //把上个缓存的内容画到新缓存上
+            //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
+            newCache.createGraphics().drawImage(cache, 0, 0, null);
         }
         cache = newCache; //交替缓存
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -101,6 +109,9 @@ public class Main_win extends javax.swing.JFrame {
         jButton8 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
+        btnConfig = new javax.swing.JButton();
+        btnUpLoad = new javax.swing.JButton();
+        btnDownLoad = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         mapLayerTable1 = new org.geotools.swing.MapLayerTable();
         jMapPane3 = new org.geotools.swing.JMapPane();
@@ -227,6 +238,39 @@ public class Main_win extends javax.swing.JFrame {
         jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar2.add(jButton16);
 
+        btnConfig.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/AppConfiguration32.png"))); // NOI18N
+        btnConfig.setFocusable(false);
+        btnConfig.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnConfig.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfigActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnConfig);
+
+        btnUpLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ArcGISExplorer32.png"))); // NOI18N
+        btnUpLoad.setFocusable(false);
+        btnUpLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnUpLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnUpLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpLoadActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnUpLoad);
+
+        btnDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ArcGISUpdater32.png"))); // NOI18N
+        btnDownLoad.setFocusable(false);
+        btnDownLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnDownLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnDownLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDownLoadActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnDownLoad);
+
         mapLayerTable1.setToolTipText("Layer");
         mapLayerTable1.setMapPane(jMapPane3);
         mapLayerTable1.setName(""); // NOI18N
@@ -281,27 +325,27 @@ public class Main_win extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(997, 997, 997)
                         .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
+                .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 863, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(29, 29, 29)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(89, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 863, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jMapPane3.getAccessibleContext().setAccessibleName("");
@@ -330,14 +374,12 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton4)))
+                    .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -433,17 +475,17 @@ public class Main_win extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(65, 65, 65)
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 652, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47)
                         .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1322, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(23, 23, 23))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -455,19 +497,35 @@ public class Main_win extends javax.swing.JFrame {
                     .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(36, 36, 36)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(83, 83, 83))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
+    private void connectServer2Upload(String ip, int port) {
+        try {
+            socket_upload = new Socket(ip, port);
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void connectServer2Download(String ip, int port) {
+        try {
+            socket_download = new Socket(ip, port);
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     // 放大
     private void ZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomInActionPerformed
-        ZoomInTool zoomInTool1=new ZoomInTool();
-        jMapPane3.setCursorTool(zoomInTool1);    
+        ZoomInTool zoomInTool1 = new ZoomInTool();
+        jMapPane3.setCursorTool(zoomInTool1);
     }//GEN-LAST:event_ZoomInActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
@@ -479,7 +537,7 @@ public class Main_win extends javax.swing.JFrame {
 
     // 缩小
     private void ZoomOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomOutActionPerformed
-        ZoomOutTool zoomOutTool1=new ZoomOutTool();
+        ZoomOutTool zoomOutTool1 = new ZoomOutTool();
         jMapPane3.setCursorTool(zoomOutTool1);
     }//GEN-LAST:event_ZoomOutActionPerformed
 
@@ -491,123 +549,114 @@ public class Main_win extends javax.swing.JFrame {
 
     // 漫游
     private void PanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PanActionPerformed
-        PanTool panTool1=new PanTool();
+        PanTool panTool1 = new PanTool();
         jMapPane3.setCursorTool(panTool1);
         System.out.println(this.mFProject.getFName());
     }//GEN-LAST:event_PanActionPerformed
 
     //要素选择
     private void SelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectionActionPerformed
-        if(isSelected==false)
-        {
-            isSelected=true;
-            originStyle=jMapPane3.getMapContent().layers().get(0).getStyle();
+        if (isSelected == false) {
+            isSelected = true;
+            originStyle = jMapPane3.getMapContent().layers().get(0).getStyle();
             this.jButton15.setBackground(java.awt.Color.LIGHT_GRAY);
-        }
-        else
-        {
-            isSelected=false;
+        } else {
+            isSelected = false;
             this.jButton15.setBackground(this.jButton1.getBackground());
             jMapPane3.setCursorTool(null);
             Layer layer = jMapPane3.getMapContent().layers().get(0);
             ((FeatureLayer) layer).setStyle(originStyle);
             jMapPane3.repaint();
         }
-        
+
     }//GEN-LAST:event_SelectionActionPerformed
 
     private void CreateFProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFProjectActionPerformed
         // TODO add your handling code here:
-        CreateFProject cfp=new CreateFProject(this);
+        CreateFProject cfp = new CreateFProject(this);
     }//GEN-LAST:event_CreateFProjectActionPerformed
 
-Point start;
-Point end;
-Point temp;
-int which;
-Point linestart;
-Point lineend;
-BufferedImage cache;
+    Point start;
+    Point end;
+    Point temp;
+    int which;
+    Point linestart;
+    Point lineend;
+    BufferedImage cache;
     private void jMapPane3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_jMapPane3MouseClicked
 
     private void jMapPane3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseDragged
         // TODO add your handling code here:
-setBackground(java.awt.Color.white);
-linestart.setLocation(lineend);
-temp.setLocation(end);
-end.setLocation(evt.getPoint());
-lineend.setLocation(evt.getPoint());
-if(cache!=null) {
-Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-g.setColor(java.awt.Color.WHITE);
-g.drawLine((int)start.getX(), (int)start.getY(), (int)temp.getX(), (int)temp.getY());
-g.setColor(java.awt.Color.RED);
-g.drawLine((int)start.getX(), (int)start.getY(), (int)end.getX(), (int)end.getY());
+        setBackground(java.awt.Color.white);
+        linestart.setLocation(lineend);
+        temp.setLocation(end);
+        end.setLocation(evt.getPoint());
+        lineend.setLocation(evt.getPoint());
+        if (cache != null) {
+            Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
+            g.setColor(java.awt.Color.WHITE);
+            g.drawLine((int) start.getX(), (int) start.getY(), (int) temp.getX(), (int) temp.getY());
+            g.setColor(java.awt.Color.RED);
+            g.drawLine((int) start.getX(), (int) start.getY(), (int) end.getX(), (int) end.getY());
 
 //-----------------------------------------------------------------------
-Graphics g_orig=jMapPane3.getGraphics();
+            Graphics g_orig = jMapPane3.getGraphics();
 //g_orig.clearRect(0, 0, getWidth(), getHeight());
 //g_orig.drawImage(cache, 0, 0, null);
-ReferencedEnvelope mapArea=jMapPane3.getMapContent().getMaxBounds();
-Rectangle rectangle=new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
-jMapPane3.getRenderer().paint((Graphics2D)g, rectangle, mapArea);
-g_orig.clearRect(0, 0, getWidth(), getHeight());
-g_orig.drawImage(cache, 0, 0, null);
+            ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
+            Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+            jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+            g_orig.clearRect(0, 0, getWidth(), getHeight());
+            g_orig.drawImage(cache, 0, 0, null);
 //jMapPane3.repaint();
-    }
+        }
     }//GEN-LAST:event_jMapPane3MouseDragged
 
     private void jMapPane3MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseMoved
         // TODO add your handling code here:
         start.setLocation(evt.getPoint());
-end.setLocation(evt.getPoint());
-linestart.x=(evt.getX());
-linestart.y=(evt.getY());
-lineend.x=(evt.getX());
-lineend.y=(evt.getY());
+        end.setLocation(evt.getPoint());
+        linestart.x = (evt.getX());
+        linestart.y = (evt.getY());
+        lineend.x = (evt.getX());
+        lineend.y = (evt.getY());
     }//GEN-LAST:event_jMapPane3MouseMoved
 
-     //打开本地图层
+    //打开本地图层
     private void OpenLayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenLayerActionPerformed
         // TODO add your handling code here:
-        if(this.mFProject==null)
-        {
-            JOptionPane.showMessageDialog(null,"请先新建一个工程!","FreeStyle",JOptionPane.WARNING_MESSAGE); 
-            CreateFProject cfp=new CreateFProject(this);
+        if (this.mFProject == null) {
+            JOptionPane.showMessageDialog(null, "请先新建一个工程!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+            CreateFProject cfp = new CreateFProject(this);
             return;
+        } else {
+            ShapefileManager sm = new ShapefileManager();
+            sm.readShpTest(jMapPane3, this.mFProject);
         }
-        else
-        {
-             ShapefileManager sm =new ShapefileManager();
-             sm.readShpTest(jMapPane3,this.mFProject);
-        }  
     }//GEN-LAST:event_OpenLayerActionPerformed
 
     //新建图层
     private void CreatelayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreatelayerActionPerformed
         // TODO add your handling code here:
-        if(this.mFProject==null)
-        {
-            JOptionPane.showMessageDialog(null,"请先新建一个工程!","FreeStyle",JOptionPane.WARNING_MESSAGE);   
-            CreateFProject cfp=new CreateFProject(this);
-        }
-        else
-        {
-             CreateLayer cl=new CreateLayer();
-             cl.setVisible(true);
+        if (this.mFProject == null) {
+            JOptionPane.showMessageDialog(null, "请先新建一个工程!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+            CreateFProject cfp = new CreateFProject(this);
+        } else {
+            CreateLayer cl = new CreateLayer(this.jMapPane3);
+            cl.setVisible(true);
         }
     }//GEN-LAST:event_CreatelayerActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
         // TODO add your handling code here:
-        ShowLayerStatus sls=new ShowLayerStatus();
+        ShowLayerStatus sls = new ShowLayerStatus();
         sls.setVisible(true);
     }//GEN-LAST:event_btnLayerStatusActionPerformed
 
@@ -615,7 +664,67 @@ lineend.y=(evt.getY());
         // TODO add your handling code here:
         //此处需要添加图层保存到数据库的函数操作
     }//GEN-LAST:event_btnSaveEditingActionPerformed
-    
+
+    private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
+        // TODO add your handling code here:
+        ServerConfig configFrame = new ServerConfig();
+        configFrame.setVisible(true);
+        serverConfig = new HashMap<>();
+        serverConfig = configFrame.getServerConfig();
+    }//GEN-LAST:event_btnConfigActionPerformed
+
+    private void btnUpLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpLoadActionPerformed
+        // TODO add your handling code here:
+         try {
+            // TODO add your handling code here:
+            connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
+            //ccy todo
+            BufferedImage image = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = image.getGraphics();
+            if (jMapPane3.getMapContent() != null) {
+                ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
+                Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+            }
+//            g.drawImage(image, 0, 0, null);
+            ImageIO.write(image, "jpg", new File("test.jpg"));
+//            BufferedImage image = ImageIO.read(new File("C:\\Users\\wuxinyu\\Pictures\\Server\\penguins.jpg"));
+            OutputStream os = socket_upload.getOutputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", output);
+            os.write(output.toByteArray());
+            os.flush();
+//            socket_upload.shutdownOutput();
+            socket_upload.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnUpLoadActionPerformed
+
+    private void btnDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownLoadActionPerformed
+        // TODO add your handling code here:
+         InputStream is = null;
+        try {
+            // TODO add your handling code here:
+            connectServer2Download(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_download")));
+            BufferedImage tempImage = null;
+            is = socket_download.getInputStream();
+            tempImage = ImageIO.read(is);
+            Graphics g = jMapPane3.getGraphics();
+            g.drawImage(tempImage, 0, 0, null);
+            jMapPane3.repaint();
+            socket_download.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnDownLoadActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -651,8 +760,8 @@ lineend.y=(evt.getY());
             }
         });
     }
-    
-     /**
+
+    /**
      * @param title the command line arguments
      */
     public void setNewTitle(String title) {
@@ -660,11 +769,11 @@ lineend.y=(evt.getY());
         this.setVisible(true);
         //this.setVisible(true);
     }
-    
-    public void setJMapPane(MapContent content){
+
+    public void setJMapPane(MapContent content) {
         this.jMapPane3.setMapContent(content);
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Define_Projection;
@@ -675,8 +784,11 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem Open;
     private javax.swing.JMenu Project;
     private javax.swing.JMenuItem Save;
+    private javax.swing.JButton btnConfig;
+    private javax.swing.JButton btnDownLoad;
     private javax.swing.JButton btnLayerStatus;
     private javax.swing.JButton btnSaveEditing;
+    private javax.swing.JButton btnUpLoad;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;

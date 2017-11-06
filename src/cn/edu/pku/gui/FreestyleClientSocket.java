@@ -365,7 +365,8 @@ public class FreestyleClientSocket extends javax.swing.JFrame {
             reader = new BufferedReader(new InputStreamReader(socket  
                     .getInputStream()));  
             // 发送客户端用户基本信息(用户名和ip地址)  
-            sendMessage(id + "@" + name + "@" + socket.getLocalAddress().toString());  
+            
+            //sendMessage(id + "@" + name + "@" + socket.getLocalAddress().toString());  
             // 开启接收消息的线程  
             messageThread = new MessageThread(reader, TextChatMessages);  
             messageThread.start();  

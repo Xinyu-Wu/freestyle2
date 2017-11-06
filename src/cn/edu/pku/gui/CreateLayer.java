@@ -5,26 +5,27 @@
  */
 package cn.edu.pku.gui;
 
+import cn.edu.pku.datasource.CreateNewLayer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import org.geotools.map.FeatureLayer;
+import org.geotools.swing.JMapPane;
 
 /**
  *
  * @author 冯雨宁
  */
 public class CreateLayer extends javax.swing.JFrame implements ActionListener {
-
-   
+    private JMapPane Panel;
     /**
      * Creates new form CreateLayer
      */
-    public CreateLayer() {
+    public CreateLayer(JMapPane drawPane) {
         initComponents();
-       
 
         //设置窗体
         this.setTitle("新建图层");
@@ -32,47 +33,51 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
         this.setVisible(true);
-        
+        Panel=drawPane;
         //锁定窗体
-        this.setResizable(false);   
-        
+        this.setResizable(false);
+
         //对齐输入框
         //jcbType.setSize(jtfName.getWidth(), jtfName.getHeight());
-        
         //按钮监听
         jbtnOK.addActionListener(this);
         jbtnCancel.addActionListener(this);
-        
+
         //键盘回车监听
-        KeyListener keyListener_create=new KeyListener(){
-            public void keyTyped(KeyEvent e){}
-            public void keyReleased(KeyEvent e){}
-            public void keyPressed(KeyEvent e){
-                if(e.getKeyChar()==KeyEvent.VK_ENTER)
-                {
-                    createNewLayer(jtfName.getText());
+        KeyListener keyListener_create = new KeyListener() {
+            public void keyTyped(KeyEvent e) {
+            }
+
+            public void keyReleased(KeyEvent e) {
+            }
+
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                    createNewLayer();
+                    dispose();
                 }
             }
-        };       
-        
+        };
+
         jtfName.addKeyListener(keyListener_create);
     }
 
-    public void actionPerformed(ActionEvent e){
-        if(e.getActionCommand()=="确定")
-        {
-            createNewLayer(jtfName.getText());            
-        }
-        else if(e.getActionCommand()=="取消")
-        {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand() == "确定") {
+            createNewLayer();
+            dispose();
+        } else if (e.getActionCommand() == "取消") {
             dispose();
         }
     }
-    
-    public void createNewLayer(String name){
-        System.out.println(name+" created!");
+
+    public void createNewLayer() {
+
+        FeatureLayer newlayer = CreateNewLayer.CreateLayer(jtfName.getText(), jcbType.getModel().getSelectedItem().toString());
+        Panel.getMapContent().addLayer(newlayer);
+        //System.out.println(name + " created!");
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -103,6 +108,11 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
         jLabel2.setText("图层名");
 
         jbtnOK.setText("确定");
+        jbtnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnOKActionPerformed(evt);
+            }
+        });
 
         jbtnCancel.setText("取消");
 
@@ -150,41 +160,11 @@ public class CreateLayer extends javax.swing.JFrame implements ActionListener {
         // TODO add your handling code here:
     }//GEN-LAST:event_jcbTypeActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CreateLayer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CreateLayer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CreateLayer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CreateLayer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
+    private void jbtnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnOKActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jbtnOKActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new CreateLayer().setVisible(true);
-            }
-        });
-    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

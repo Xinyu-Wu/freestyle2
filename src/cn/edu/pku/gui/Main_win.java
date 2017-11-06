@@ -75,6 +75,7 @@ public class Main_win extends javax.swing.JFrame {
             }
         }));
         jMapPane3.setBackground(java.awt.Color.white);
+        jMapPane3.setMapContent(new MapContent());
         this.start = new Point(0, 0);
         this.end = new Point(0, 0);
         this.linestart = new Point(0, 0);

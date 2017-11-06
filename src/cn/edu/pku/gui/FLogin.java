@@ -323,7 +323,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         }
     }
 
-    private boolean userRegisterReceive(TransmittedMessage tm) {
+    public boolean userRegisterReceive(TransmittedMessage tm) {
         HashMap<String, Object> hm = new HashMap<>();
         hm = tm.getData();
         if (hm.get("ReturnMsg").toString().equals("Welcome")) {

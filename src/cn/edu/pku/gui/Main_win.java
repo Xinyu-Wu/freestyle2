@@ -36,6 +36,7 @@ import org.geotools.swing.tool.ZoomOutTool;
 public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
+    private boolean isEditing =false;
     private Style originStyle=null;
     public FProject mFProject=null;
     
@@ -89,20 +90,17 @@ public class Main_win extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToolBar1 = new javax.swing.JToolBar();
+        jToolBar2 = new javax.swing.JToolBar();
+        jButton11 = new javax.swing.JButton();
+        jButton10 = new javax.swing.JButton();
+        jButton14 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
-        jToolBar2 = new javax.swing.JToolBar();
-        jButton11 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         mapLayerTable1 = new org.geotools.swing.MapLayerTable();
         jMapPane3 = new org.geotools.swing.JMapPane();
@@ -110,7 +108,6 @@ public class Main_win extends javax.swing.JFrame {
         jScrollBar2 = new javax.swing.JScrollBar();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        jtbEdit = new javax.swing.JToggleButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -118,7 +115,10 @@ public class Main_win extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        jToolBar3 = new javax.swing.JToolBar();
+        btnSaveEditing = new javax.swing.JButton();
+        jToolBar1 = new javax.swing.JToolBar();
+        btnLayerStatus = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         Project = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
@@ -135,60 +135,9 @@ public class Main_win extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1600, 960));
 
-        jToolBar1.setRollover(true);
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomInTool16.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ZoomInActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton1);
-
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomOutTool16.png"))); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ZoomOutActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton2);
-
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomFullExtent16.png"))); // NOI18N
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                FullExtentActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton7);
-
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/PanTool16.png"))); // NOI18N
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PanActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton8);
-
-        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ElementSelectTool16.png"))); // NOI18N
-        jButton15.setFocusable(false);
-        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SelectionActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton15);
-
-        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GoToXY16.png"))); // NOI18N
-        jButton16.setFocusable(false);
-        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton16);
-
         jToolBar2.setRollover(true);
 
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericOpen16.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericOpen32.png"))); // NOI18N
         jButton11.setFocusable(false);
         jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton11.setMaximumSize(new java.awt.Dimension(40, 40));
@@ -201,7 +150,7 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton11);
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DocumentNew16.png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DocumentNew32.png"))); // NOI18N
         jButton10.setFocusable(false);
         jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -212,7 +161,7 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton10);
 
-        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DataAdd16.png"))); // NOI18N
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DataAdd32.png"))); // NOI18N
         jButton14.setFocusable(false);
         jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -223,24 +172,64 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton14);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericSave16.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericSave32.png"))); // NOI18N
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar2.add(jButton3);
 
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericBlueLeftArrowCurvedDown16.png"))); // NOI18N
-        jToolBar2.add(jButton12);
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomInTool32.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ZoomInActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton1);
 
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericBlueRightArrowCurvedDown16.png"))); // NOI18N
-        jButton13.setFocusable(false);
-        jButton13.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar2.add(jButton13);
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomOutTool32.png"))); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ZoomOutActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton2);
 
-        mapLayerTable1.setToolTipText("test");
-        mapLayerTable1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomFullExtent32.png"))); // NOI18N
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FullExtentActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton7);
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/PanTool32.png"))); // NOI18N
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PanActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton8);
+
+        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ElementSelectTool32.png"))); // NOI18N
+        jButton15.setFocusable(false);
+        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SelectionActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton15);
+
+        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GoToXY32.png"))); // NOI18N
+        jButton16.setFocusable(false);
+        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar2.add(jButton16);
+
+        mapLayerTable1.setToolTipText("Layer");
         mapLayerTable1.setMapPane(jMapPane3);
+        mapLayerTable1.setName(""); // NOI18N
 
         jMapPane3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
@@ -269,10 +258,10 @@ public class Main_win extends javax.swing.JFrame {
         );
         jMapPane3Layout.setVerticalGroup(
             jMapPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
-            .addGroup(jMapPane3Layout.createSequentialGroup()
+            .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 783, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jMapPane3Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTextField1.setEditable(false);
@@ -292,36 +281,31 @@ public class Main_win extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(73, 73, 73))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mapLayerTable1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(26, 26, 26)
+                .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10))
+                .addContainerGap(89, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 863, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jMapPane3.getAccessibleContext().setAccessibleName("");
         jMapPane3.getAccessibleContext().setAccessibleDescription("");
-
-        jtbEdit.setText("Editing");
 
         jLabel1.setText("Message");
 
@@ -346,7 +330,7 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
@@ -362,15 +346,42 @@ public class Main_win extends javax.swing.JFrame {
                 .addGap(47, 47, 47)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 571, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jButton4)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        jButton5.setText("jButton5");
+        jToolBar3.setRollover(true);
+
+        btnSaveEditing.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/EditingEditShape32.png"))); // NOI18N
+        btnSaveEditing.setText("Save Editing");
+        btnSaveEditing.setEnabled(false);
+        btnSaveEditing.setFocusable(false);
+        btnSaveEditing.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSaveEditing.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSaveEditing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveEditingActionPerformed(evt);
+            }
+        });
+        jToolBar3.add(btnSaveEditing);
+
+        jToolBar1.setRollover(true);
+
+        btnLayerStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ViewDetails_B_32.png"))); // NOI18N
+        btnLayerStatus.setText("Layer Status");
+        btnLayerStatus.setFocusable(false);
+        btnLayerStatus.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnLayerStatus.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnLayerStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLayerStatusActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnLayerStatus);
 
         Project.setText("Project");
 
@@ -422,41 +433,32 @@ public class Main_win extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(421, 421, 421)
-                        .addComponent(jtbEdit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(65, 65, 65)
+                        .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 4, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtbEdit)
-                    .addComponent(jButton5))
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(83, 83, 83))
         );
 
         pack();
@@ -602,6 +604,17 @@ lineend.y=(evt.getY());
         // TODO add your handling code here:
         
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
+        // TODO add your handling code here:
+        ShowLayerStatus sls=new ShowLayerStatus();
+        sls.setVisible(true);
+    }//GEN-LAST:event_btnLayerStatusActionPerformed
+
+    private void btnSaveEditingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveEditingActionPerformed
+        // TODO add your handling code here:
+        //此处需要添加图层保存到数据库的函数操作
+    }//GEN-LAST:event_btnSaveEditingActionPerformed
     
     /**
      * @param args the command line arguments
@@ -662,18 +675,17 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem Open;
     private javax.swing.JMenu Project;
     private javax.swing.JMenuItem Save;
+    private javax.swing.JButton btnLayerStatus;
+    private javax.swing.JButton btnSaveEditing;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JEditorPane jEditorPane1;
@@ -694,7 +706,7 @@ lineend.y=(evt.getY());
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
-    private javax.swing.JToggleButton jtbEdit;
+    private javax.swing.JToolBar jToolBar3;
     private org.geotools.swing.MapLayerTable mapLayerTable1;
     // End of variables declaration//GEN-END:variables
 }

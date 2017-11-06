@@ -16,17 +16,18 @@ import javax.swing.JOptionPane;
 public class OpenFProject extends javax.swing.JFrame {
 
     DefaultListModel dlm = new DefaultListModel();
+    Main_win main;
     /**
      * Creates new form OpenFProject
      */
-    public OpenFProject() {
+    public OpenFProject(Main_win fMain) {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        dlm.addElement("1");
-        dlm.addElement("2");
+        main=fMain;
+    }
+    public void setList(){
         jList1.setModel(dlm);
-        
     }
 
     /**
@@ -112,29 +113,28 @@ public class OpenFProject extends javax.swing.JFrame {
     //
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
         // TODO add your handling code here:
-        Main_win fMain=new Main_win();
-        CreateFProject cfp=new CreateFProject(fMain);
+        CreateFProject cfp=new CreateFProject(main);
         this.dispose();
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
-        Main_win fMain=new Main_win();
-        fMain.setVisible(true);
+
+        main.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenActionPerformed
         // TODO add your handling code here:
-        Main_win fMain=new Main_win();
-        fMain.setVisible(true);
+
+        main.setVisible(true);
         String name=jList1.getSelectedValue();
         String title= "FreeStyle-"+name+ ".prj";
-        fMain.setTitle(title);
+        main.setTitle(title);
         dispose();
         JOptionPane.showMessageDialog(null,"Project "+name+"\n is open successfully !","FreeStyle",JOptionPane.INFORMATION_MESSAGE);   
-        fMain.mFProject=new FProject();
-        fMain.setVisible(true);
+        main.mFProject=new FProject();
+        main.setVisible(true);
     }//GEN-LAST:event_btnOpenActionPerformed
 
     /**
@@ -167,7 +167,8 @@ public class OpenFProject extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OpenFProject().setVisible(true);
+                Main_win main=new Main_win("test");
+                new OpenFProject(main).setVisible(true);
             }
         });
     }

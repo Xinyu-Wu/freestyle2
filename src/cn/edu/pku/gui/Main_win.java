@@ -44,6 +44,8 @@ public class Main_win extends javax.swing.JFrame {
     private boolean isEditing = false;
     private Style originStyle = null;
     public FProject mFProject = null;
+    
+    public String UserID="";
 
     private HashMap<String, String> serverConfig;
     private Socket socket_upload;
@@ -52,8 +54,9 @@ public class Main_win extends javax.swing.JFrame {
     /**
      * Creates new form Main_win
      */
-    public Main_win() {
+    public Main_win(String id) {
         initComponents();
+        UserID=id;
         this.setTitle("Freestyle");
         this.setLocationRelativeTo(null);
 
@@ -631,6 +634,7 @@ public class Main_win extends javax.swing.JFrame {
         if (this.mFProject == null) {
             JOptionPane.showMessageDialog(null, "请先新建一个工程!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
             CreateFProject cfp = new CreateFProject(this);
+            
             return;
         } else {
             ShapefileManager sm = new ShapefileManager();
@@ -757,7 +761,7 @@ public class Main_win extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main_win().setVisible(true);
+                new Main_win("test").setVisible(true);
             }
         });
     }

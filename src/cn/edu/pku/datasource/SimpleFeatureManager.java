@@ -13,6 +13,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
@@ -556,7 +557,9 @@ public class SimpleFeatureManager {
         for (int i = 0; i < sGeometryCout; i++) {
             //检查shp与geometry是否同类型
             Class geometryClass = sTargetGeometries[i].getClass();
-            if (featureSourceClass.equals(geometryClass) == false) {
+            if (featureSourceClass.equals(MultiPolygon.class) && geometryClass.equals(Polygon.class)) {
+                System.out.println("MultiPolygon : Polygon");
+            } else if (featureSourceClass.equals(geometryClass) == false) {
                 return false;
             }
             //构建要素

@@ -1,9 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cn.edu.pku.gui;
+
 import FProject.FProject;
 import FeatureEdit.FeatureSelection;
 import cn.edu.pku.datasource.ShapefileManager;
@@ -38,7 +34,6 @@ import org.geotools.swing.tool.PanTool;
 import org.geotools.swing.tool.ZoomInTool;
 import org.geotools.swing.tool.ZoomOutTool;
 
-
 /**
  *
  * @author weizy
@@ -46,12 +41,14 @@ import org.geotools.swing.tool.ZoomOutTool;
 public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
-    private Style originStyle=null;
-    public FProject mFProject=null;
-    
+    private boolean isEditing = false;
+    private Style originStyle = null;
+    public FProject mFProject = null;
+
     private HashMap<String, String> serverConfig;
     private Socket socket_upload;
     private Socket socket_download;
+
     /**
      * Creates new form Main_win
      */
@@ -59,39 +56,39 @@ public class Main_win extends javax.swing.JFrame {
         initComponents();
         this.setTitle("Freestyle");
         this.setLocationRelativeTo(null);
-        
-        FeatureEdit.FeatureSelection fs=new FeatureSelection();
+
+        FeatureEdit.FeatureSelection fs = new FeatureSelection();
         System.out.println("works!");
         this.jButton15.addActionListener(e -> jMapPane3.setCursorTool(
                 new CursorTool() {
 
-                    @Override
-                    public void onMouseClicked(MapMouseEvent ev) {
-                        if(isSelected==true)
-                        {
-                            if(jMapPane3.getMapContent().layers().isEmpty()==false)
-                            {
-                                fs.featureSource = (SimpleFeatureSource) jMapPane3.getMapContent().layers().get(0).getFeatureSource();
-                                fs.setGeometry();
-                                fs.selectFeatures(ev,jMapPane3,originStyle);
-                            }
-                            
-                        }                        
+            @Override
+            public void onMouseClicked(MapMouseEvent ev) {
+                if (isSelected == true) {
+                    if (jMapPane3.getMapContent().layers().isEmpty() == false) {
+                        fs.featureSource = (SimpleFeatureSource) jMapPane3.getMapContent().layers().get(0).getFeatureSource();
+                        fs.setGeometry();
+                        fs.selectFeatures(ev, jMapPane3, originStyle);
                     }
-                }));
+
+                }
+            }
+        }));
         jMapPane3.setBackground(java.awt.Color.white);
+        jMapPane3.setMapContent(new MapContent());
         this.start = new Point(0, 0);
         this.end = new Point(0, 0);
         this.linestart = new Point(0, 0);
         this.lineend = new Point(0, 0);
         this.temp = new Point(0, 0);
-        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(),  BufferedImage.TYPE_INT_ARGB);
-        if(cache!=null) { //把上个缓存的内容画到新缓存上
-        //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
-        newCache.createGraphics().drawImage(cache, 0, 0, null);
+        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        if (cache != null) { //把上个缓存的内容画到新缓存上
+            //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
+            newCache.createGraphics().drawImage(cache, 0, 0, null);
         }
         cache = newCache; //交替缓存
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -102,26 +99,27 @@ public class Main_win extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToolBar1 = new javax.swing.JToolBar();
+        jToolBar2 = new javax.swing.JToolBar();
+        jButton11 = new javax.swing.JButton();
+        jButton10 = new javax.swing.JButton();
+        jButton14 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
-        jToolBar2 = new javax.swing.JToolBar();
-        jButton11 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
+        btnConfig = new javax.swing.JButton();
+        btnUpLoad = new javax.swing.JButton();
+        btnDownLoad = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         mapLayerTable1 = new org.geotools.swing.MapLayerTable();
         jMapPane3 = new org.geotools.swing.JMapPane();
+        jScrollBar1 = new javax.swing.JScrollBar();
+        jScrollBar2 = new javax.swing.JScrollBar();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        jtbEdit = new javax.swing.JToggleButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -129,11 +127,10 @@ public class Main_win extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jToolBar3 = new javax.swing.JToolBar();
-        jButton6 = new javax.swing.JButton();
-        Upload_Button = new javax.swing.JButton();
-        Download_Button = new javax.swing.JButton();
+        btnSaveEditing = new javax.swing.JButton();
+        jToolBar1 = new javax.swing.JToolBar();
+        btnLayerStatus = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         Project = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
@@ -150,60 +147,9 @@ public class Main_win extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1600, 960));
 
-        jToolBar1.setRollover(true);
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomInTool16.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ZoomInActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton1);
-
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomOutTool16.png"))); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ZoomOutActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton2);
-
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomFullExtent16.png"))); // NOI18N
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                FullExtentActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton7);
-
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/PanTool16.png"))); // NOI18N
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PanActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton8);
-
-        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ElementSelectTool16.png"))); // NOI18N
-        jButton15.setFocusable(false);
-        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SelectionActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton15);
-
-        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GoToXY16.png"))); // NOI18N
-        jButton16.setFocusable(false);
-        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton16);
-
         jToolBar2.setRollover(true);
 
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericOpen16.png"))); // NOI18N
+        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericOpen32.png"))); // NOI18N
         jButton11.setFocusable(false);
         jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton11.setMaximumSize(new java.awt.Dimension(40, 40));
@@ -216,7 +162,7 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton11);
 
-        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DocumentNew16.png"))); // NOI18N
+        jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DocumentNew32.png"))); // NOI18N
         jButton10.setFocusable(false);
         jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -227,7 +173,7 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton10);
 
-        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DataAdd16.png"))); // NOI18N
+        jButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/DataAdd32.png"))); // NOI18N
         jButton14.setFocusable(false);
         jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -238,24 +184,97 @@ public class Main_win extends javax.swing.JFrame {
         });
         jToolBar2.add(jButton14);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericSave16.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericSave32.png"))); // NOI18N
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar2.add(jButton3);
 
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericBlueLeftArrowCurvedDown16.png"))); // NOI18N
-        jToolBar2.add(jButton12);
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomInTool32.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ZoomInActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton1);
 
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GenericBlueRightArrowCurvedDown16.png"))); // NOI18N
-        jButton13.setFocusable(false);
-        jButton13.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar2.add(jButton13);
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomOutTool32.png"))); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ZoomOutActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton2);
 
-        mapLayerTable1.setToolTipText("test");
-        mapLayerTable1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ZoomFullExtent32.png"))); // NOI18N
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FullExtentActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton7);
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/PanTool32.png"))); // NOI18N
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PanActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton8);
+
+        jButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ElementSelectTool32.png"))); // NOI18N
+        jButton15.setFocusable(false);
+        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SelectionActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jButton15);
+
+        jButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/GoToXY32.png"))); // NOI18N
+        jButton16.setFocusable(false);
+        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar2.add(jButton16);
+
+        btnConfig.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/AppConfiguration32.png"))); // NOI18N
+        btnConfig.setFocusable(false);
+        btnConfig.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnConfig.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfigActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnConfig);
+
+        btnUpLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ArcGISExplorer32.png"))); // NOI18N
+        btnUpLoad.setFocusable(false);
+        btnUpLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnUpLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnUpLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpLoadActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnUpLoad);
+
+        btnDownLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ArcGISUpdater32.png"))); // NOI18N
+        btnDownLoad.setFocusable(false);
+        btnDownLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnDownLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnDownLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDownLoadActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnDownLoad);
+
+        mapLayerTable1.setToolTipText("Layer");
         mapLayerTable1.setMapPane(jMapPane3);
+        mapLayerTable1.setName(""); // NOI18N
 
         jMapPane3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
@@ -271,15 +290,23 @@ public class Main_win extends javax.swing.JFrame {
             }
         });
 
+        jScrollBar2.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
+
         javax.swing.GroupLayout jMapPane3Layout = new javax.swing.GroupLayout(jMapPane3);
         jMapPane3.setLayout(jMapPane3Layout);
         jMapPane3Layout.setHorizontalGroup(
             jMapPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jMapPane3Layout.createSequentialGroup()
+                .addComponent(jScrollBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 944, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jMapPane3Layout.setVerticalGroup(
             jMapPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 736, Short.MAX_VALUE)
+            .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 783, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jMapPane3Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTextField1.setEditable(false);
@@ -302,35 +329,28 @@ public class Main_win extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 463, Short.MAX_VALUE)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(73, 73, 73))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addGap(997, 997, 997)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(mapLayerTable1, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mapLayerTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 863, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jMapPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
 
         jMapPane3.getAccessibleContext().setAccessibleName("");
         jMapPane3.getAccessibleContext().setAccessibleDescription("");
-
-        jtbEdit.setText("Editing");
 
         jLabel1.setText("Message");
 
@@ -355,14 +375,12 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton4)))
+                    .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -371,56 +389,42 @@ public class Main_win extends javax.swing.JFrame {
                 .addGap(47, 47, 47)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 571, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jButton4)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap())
         );
-
-        jButton5.setText("jButton5");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
 
         jToolBar3.setRollover(true);
 
-        jButton6.setText("ServerCfg");
-        jButton6.setFocusable(false);
-        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        btnSaveEditing.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/EditingEditShape32.png"))); // NOI18N
+        btnSaveEditing.setText("Save Editing");
+        btnSaveEditing.setEnabled(false);
+        btnSaveEditing.setFocusable(false);
+        btnSaveEditing.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSaveEditing.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSaveEditing.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                btnSaveEditingActionPerformed(evt);
             }
         });
-        jToolBar3.add(jButton6);
+        jToolBar3.add(btnSaveEditing);
 
-        Upload_Button.setText("Upload");
-        Upload_Button.setFocusable(false);
-        Upload_Button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        Upload_Button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        Upload_Button.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Upload_ButtonActionPerformed(evt);
-            }
-        });
-        jToolBar3.add(Upload_Button);
+        jToolBar1.setRollover(true);
 
-        Download_Button.setText("Download");
-        Download_Button.setToolTipText("");
-        Download_Button.setFocusable(false);
-        Download_Button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        Download_Button.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        Download_Button.addActionListener(new java.awt.event.ActionListener() {
+        btnLayerStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cn.edu.pku.icons/ViewDetails_B_32.png"))); // NOI18N
+        btnLayerStatus.setText("Layer Status");
+        btnLayerStatus.setFocusable(false);
+        btnLayerStatus.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnLayerStatus.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnLayerStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Download_ButtonActionPerformed(evt);
+                btnLayerStatusActionPerformed(evt);
             }
         });
-        jToolBar3.add(Download_Button);
+        jToolBar1.add(btnLayerStatus);
 
         Project.setText("Project");
 
@@ -473,69 +477,56 @@ public class Main_win extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(421, 421, 421)
-                                .addComponent(jtbEdit)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton5)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap()
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 652, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47)
+                        .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 4, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtbEdit)
-                    .addComponent(jButton5))
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    private void connectServer2Upload(String ip, int port){
+
+    private void connectServer2Upload(String ip, int port) {
         try {
             socket_upload = new Socket(ip, port);
         } catch (IOException ex) {
             Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void connectServer2Download(String ip, int port){
+
+    private void connectServer2Download(String ip, int port) {
         try {
             socket_download = new Socket(ip, port);
         } catch (IOException ex) {
             Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // 放大
     private void ZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomInActionPerformed
-        ZoomInTool zoomInTool1=new ZoomInTool();
-        jMapPane3.setCursorTool(zoomInTool1);    
+        ZoomInTool zoomInTool1 = new ZoomInTool();
+        jMapPane3.setCursorTool(zoomInTool1);
     }//GEN-LAST:event_ZoomInActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
@@ -547,7 +538,7 @@ public class Main_win extends javax.swing.JFrame {
 
     // 缩小
     private void ZoomOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZoomOutActionPerformed
-        ZoomOutTool zoomOutTool1=new ZoomOutTool();
+        ZoomOutTool zoomOutTool1 = new ZoomOutTool();
         jMapPane3.setCursorTool(zoomOutTool1);
     }//GEN-LAST:event_ZoomOutActionPerformed
 
@@ -559,128 +550,133 @@ public class Main_win extends javax.swing.JFrame {
 
     // 漫游
     private void PanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PanActionPerformed
-        PanTool panTool1=new PanTool();
+        PanTool panTool1 = new PanTool();
         jMapPane3.setCursorTool(panTool1);
         System.out.println(this.mFProject.getFName());
     }//GEN-LAST:event_PanActionPerformed
 
     //要素选择
     private void SelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectionActionPerformed
-        if(isSelected==false)
-        {
-            isSelected=true;
-            originStyle=jMapPane3.getMapContent().layers().get(0).getStyle();
+        if (isSelected == false) {
+            isSelected = true;
+            originStyle = jMapPane3.getMapContent().layers().get(0).getStyle();
             this.jButton15.setBackground(java.awt.Color.LIGHT_GRAY);
-        }
-        else
-        {
-            isSelected=false;
+        } else {
+            isSelected = false;
             this.jButton15.setBackground(this.jButton1.getBackground());
             jMapPane3.setCursorTool(null);
             Layer layer = jMapPane3.getMapContent().layers().get(0);
             ((FeatureLayer) layer).setStyle(originStyle);
             jMapPane3.repaint();
         }
-        
+
     }//GEN-LAST:event_SelectionActionPerformed
 
     private void CreateFProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateFProjectActionPerformed
         // TODO add your handling code here:
-        CreateFProject cfp=new CreateFProject(this);
+        CreateFProject cfp = new CreateFProject(this);
     }//GEN-LAST:event_CreateFProjectActionPerformed
 
-Point start;
-Point end;
-Point temp;
-int which;
-Point linestart;
-Point lineend;
-BufferedImage cache;
+    Point start;
+    Point end;
+    Point temp;
+    int which;
+    Point linestart;
+    Point lineend;
+    BufferedImage cache;
     private void jMapPane3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_jMapPane3MouseClicked
 
     private void jMapPane3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseDragged
         // TODO add your handling code here:
-setBackground(java.awt.Color.white);
-linestart.setLocation(lineend);
-temp.setLocation(end);
-end.setLocation(evt.getPoint());
-lineend.setLocation(evt.getPoint());
-if(cache!=null) {
-Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-g.setColor(java.awt.Color.WHITE);
-g.drawLine((int)start.getX(), (int)start.getY(), (int)temp.getX(), (int)temp.getY());
-g.setColor(java.awt.Color.RED);
-g.drawLine((int)start.getX(), (int)start.getY(), (int)end.getX(), (int)end.getY());
+        setBackground(java.awt.Color.white);
+        linestart.setLocation(lineend);
+        temp.setLocation(end);
+        end.setLocation(evt.getPoint());
+        lineend.setLocation(evt.getPoint());
+        if (cache != null) {
+            Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
+            g.setColor(java.awt.Color.WHITE);
+            g.drawLine((int) start.getX(), (int) start.getY(), (int) temp.getX(), (int) temp.getY());
+            g.setColor(java.awt.Color.RED);
+            g.drawLine((int) start.getX(), (int) start.getY(), (int) end.getX(), (int) end.getY());
 
 //-----------------------------------------------------------------------
-Graphics g_orig=jMapPane3.getGraphics();
+            Graphics g_orig = jMapPane3.getGraphics();
 //g_orig.clearRect(0, 0, getWidth(), getHeight());
 //g_orig.drawImage(cache, 0, 0, null);
-ReferencedEnvelope mapArea=jMapPane3.getMapContent().getMaxBounds();
-Rectangle rectangle=new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
-jMapPane3.getRenderer().paint((Graphics2D)g, rectangle, mapArea);
-g_orig.clearRect(0, 0, getWidth(), getHeight());
-g_orig.drawImage(cache, 0, 0, null);
+            ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
+            Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+            jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+            g_orig.clearRect(0, 0, getWidth(), getHeight());
+            g_orig.drawImage(cache, 0, 0, null);
 //jMapPane3.repaint();
-    }
+        }
     }//GEN-LAST:event_jMapPane3MouseDragged
 
     private void jMapPane3MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseMoved
         // TODO add your handling code here:
         start.setLocation(evt.getPoint());
-end.setLocation(evt.getPoint());
-linestart.x=(evt.getX());
-linestart.y=(evt.getY());
-lineend.x=(evt.getX());
-lineend.y=(evt.getY());
+        end.setLocation(evt.getPoint());
+        linestart.x = (evt.getX());
+        linestart.y = (evt.getY());
+        lineend.x = (evt.getX());
+        lineend.y = (evt.getY());
     }//GEN-LAST:event_jMapPane3MouseMoved
 
-     //打开本地图层
+    //打开本地图层
     private void OpenLayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenLayerActionPerformed
         // TODO add your handling code here:
-        if(this.mFProject==null)
-        {
-            JOptionPane.showMessageDialog(null,"请先新建一个工程!","FreeStyle",JOptionPane.WARNING_MESSAGE); 
-            CreateFProject cfp=new CreateFProject(this);
+        if (this.mFProject == null) {
+            JOptionPane.showMessageDialog(null, "请先新建一个工程!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+            CreateFProject cfp = new CreateFProject(this);
             return;
+        } else {
+            ShapefileManager sm = new ShapefileManager();
+            sm.readShpTest(jMapPane3, this.mFProject);
         }
-        else
-        {
-             ShapefileManager sm =new ShapefileManager();
-             sm.readShpTest(jMapPane3,this.mFProject);
-        }  
     }//GEN-LAST:event_OpenLayerActionPerformed
 
     //新建图层
     private void CreatelayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreatelayerActionPerformed
         // TODO add your handling code here:
-        if(this.mFProject==null)
-        {
-            JOptionPane.showMessageDialog(null,"请先新建一个工程!","FreeStyle",JOptionPane.WARNING_MESSAGE);   
-            CreateFProject cfp=new CreateFProject(this);
-        }
-        else
-        {
-            /*喵喵喵？？？先注释掉，等接口完善了再加进去
-             CreateLayer cl=new CreateLayer();
-             cl.setVisible(true);
-            */
+        if (this.mFProject == null) {
+            JOptionPane.showMessageDialog(null, "请先新建一个工程!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+            CreateFProject cfp = new CreateFProject(this);
+        } else {
+            CreateLayer cl = new CreateLayer(this.jMapPane3);
+            cl.setVisible(true);
         }
     }//GEN-LAST:event_CreatelayerActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+        ShowLayerStatus sls = new ShowLayerStatus();
+        sls.setVisible(true);
+    }//GEN-LAST:event_btnLayerStatusActionPerformed
 
-    private void Upload_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Upload_ButtonActionPerformed
-        try {
+    private void btnSaveEditingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveEditingActionPerformed
+        // TODO add your handling code here:
+        //此处需要添加图层保存到数据库的函数操作
+    }//GEN-LAST:event_btnSaveEditingActionPerformed
+
+    private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
+        // TODO add your handling code here:
+        ServerConfig configFrame = new ServerConfig();
+        configFrame.setVisible(true);
+        serverConfig = new HashMap<>();
+        serverConfig = configFrame.getServerConfig();
+    }//GEN-LAST:event_btnConfigActionPerformed
+
+    private void btnUpLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpLoadActionPerformed
+        // TODO add your handling code here:
+         try {
             // TODO add your handling code here:
             connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
             //ccy todo
@@ -704,18 +700,11 @@ lineend.y=(evt.getY());
         } catch (IOException ex) {
             Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_Upload_ButtonActionPerformed
+    }//GEN-LAST:event_btnUpLoadActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void btnDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownLoadActionPerformed
         // TODO add your handling code here:
-        ServerConfig configFrame = new ServerConfig();
-        configFrame.setVisible(true);
-        serverConfig = new HashMap<>();
-        serverConfig = configFrame.getServerConfig();
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void Download_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Download_ButtonActionPerformed
-        InputStream is = null;
+         InputStream is = null;
         try {
             // TODO add your handling code here:
             connectServer2Download(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_download")));
@@ -735,8 +724,8 @@ lineend.y=(evt.getY());
                 Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }//GEN-LAST:event_Download_ButtonActionPerformed
-    
+    }//GEN-LAST:event_btnDownLoadActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -772,8 +761,8 @@ lineend.y=(evt.getY());
             }
         });
     }
-    
-     /**
+
+    /**
      * @param title the command line arguments
      */
     public void setNewTitle(String title) {
@@ -781,15 +770,14 @@ lineend.y=(evt.getY());
         this.setVisible(true);
         //this.setVisible(true);
     }
-    
-    public void setJMapPane(MapContent content){
+
+    public void setJMapPane(MapContent content) {
         this.jMapPane3.setMapContent(content);
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Define_Projection;
-    private javax.swing.JButton Download_Button;
     private javax.swing.JMenuItem Exit;
     private javax.swing.JMenu Geoprocessing;
     private javax.swing.JMenu Help;
@@ -797,20 +785,20 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem Open;
     private javax.swing.JMenu Project;
     private javax.swing.JMenuItem Save;
-    private javax.swing.JButton Upload_Button;
+    private javax.swing.JButton btnConfig;
+    private javax.swing.JButton btnDownLoad;
+    private javax.swing.JButton btnLayerStatus;
+    private javax.swing.JButton btnSaveEditing;
+    private javax.swing.JButton btnUpLoad;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JEditorPane jEditorPane1;
@@ -822,6 +810,8 @@ lineend.y=(evt.getY());
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollBar jScrollBar1;
+    private javax.swing.JScrollBar jScrollBar2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jTextField1;
@@ -830,7 +820,6 @@ lineend.y=(evt.getY());
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
-    private javax.swing.JToggleButton jtbEdit;
     private org.geotools.swing.MapLayerTable mapLayerTable1;
     // End of variables declaration//GEN-END:variables
 }

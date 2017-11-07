@@ -169,6 +169,7 @@ public class OpenFProject extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+<<<<<<< HEAD
                 Main_win main;
                 try {
                     main = new Main_win("test");
@@ -177,6 +178,10 @@ public class OpenFProject extends javax.swing.JFrame {
                     Logger.getLogger(OpenFProject.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
+=======
+               // Main_win main=new Main_win("test");
+               // new OpenFProject(main).setVisible(true);
+>>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
             }
         });
     }

@@ -55,6 +55,8 @@ public class Main_win extends javax.swing.JFrame {
     private HashMap<String, String> serverConfig;
     private Socket socket_upload;
     private Socket socket_download;
+    
+    private DrawEditingFeature drawEditingFeature;
 
     FreeStyleClientPureSocket mSocket;
 
@@ -666,9 +668,13 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
         // TODO add your handling code here:
+<<<<<<< HEAD
 
         ShowLayerStatus sls = new ShowLayerStatus(this,mFProject.getFName());
 
+=======
+        ShowLayerStatus sls = new ShowLayerStatus(this);
+>>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
         sls.setVisible(true);
     }//GEN-LAST:event_btnLayerStatusActionPerformed
 

@@ -292,8 +292,12 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 //关闭当前界面
                 dispose();
                 //进入主界面
+<<<<<<< HEAD
                 Main_win fMain=new Main_win(jtfID.getText());
                 
+=======
+                Main_win fMain = new Main_win(jtfID.getText());
+>>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
                 fMain.setVisible(false);
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 

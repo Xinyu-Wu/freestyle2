@@ -182,7 +182,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         } else if (jpf.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "请输入密码!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
         } else {
-            userLogin(jtfID.getText(), jpf.getText());
+            userRegister(jtfID.getText(), jpf.getText());
         }
     }
 
@@ -292,7 +292,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 //关闭当前界面
                 dispose();
                 //进入主界面
-                Main_win fMain = new Main_win(jtfID.getText());
+                Main_win fMain=new Main_win(jtfID.getText());
+                
                 fMain.setVisible(false);
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 

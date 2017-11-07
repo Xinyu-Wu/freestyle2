@@ -610,11 +610,12 @@ public class Main_win extends javax.swing.JFrame {
      * StartEditing
      * 或许传名称并不可行，可以试着传geometrydescription
      */
-    public void StartEditing(String geometrydescription){
+    
+    public void StartEditing(SimpleFeatureSource featureSource){
         isEditing=true;
         //-------------------------------------------------------------------------
-        Layer editlayer= jMapPane3.getMapContent().layers().get(0);
-        String type= editlayer.getFeatureSource().getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
+        //Layer editlayer= jMapPane3.getMapContent().layers().get(0);
+        String type= featureSource.getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
         drawEditingFeature.StartEditing(type);
     }
     

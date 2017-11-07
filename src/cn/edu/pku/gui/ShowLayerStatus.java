@@ -7,7 +7,9 @@ package cn.edu.pku.gui;
 
 import FMessage.FreeStyleClientPureSocket;
 import FMessage.TransmittedMessage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -36,7 +38,8 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     Main_win main;
      DefaultListModel dlmWL = new DefaultListModel();
       DefaultListModel dlmOB = new DefaultListModel();
-    
+      //ArrayList<SimpleFeatureSource> ListSFS=new ArrayList<SimpleFeatureSource>();
+    HashMap<String, SimpleFeatureSource> hmsfs = new HashMap<>();
 
     public ShowLayerStatus(Main_win fMain,String Project) {
         initComponents();
@@ -103,6 +106,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             
             //显示
             String layer = hm.get("LayerName").toString();
+            hmsfs.put(layer, (SimpleFeatureSource)hm.get("Features"));
             if(hm.get("LayerStatus").toString().equals("Editing"))
             {
                 dlmOB.addElement(layer);
@@ -256,7 +260,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             main.CurrentLayer=jListWL.getSelectedValue();
             main.isEditing=true;
             main.setBtnSaveEditing();
-            main.StartEditing(mProject);
+            main.StartEditing(hmsfs.get(main.CurrentLayer));
             
             return true;
         } else {

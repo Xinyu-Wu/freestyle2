@@ -158,7 +158,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 break;
             case "重置":
                 clear();
-                break;
+                break; 
+                
         }
     }
 
@@ -300,7 +301,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 Main_win fMain=new Main_win(jtfID.getText());
                 fMain.mSocket = this.mSocket;
                 fMain.mSocket.clientMessageParser.setFMainWin(fMain);
-                fMain.setVisible(true);
+                fMain.setVisible(false);
                 //测试部分
                 /*
                 String messageID = mSocket.clientMessageIDPool.getOneRandomID("sunqi");

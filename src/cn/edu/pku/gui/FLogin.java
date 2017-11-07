@@ -267,7 +267,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.*/
         mSocket.ownerChanged(id);
         mSocket.clientMessageParser.setFLogin(this);
-        mSocket.connectActionPerformed(id, "10.128.176.234", "8000", id);
+        mSocket.connectActionPerformed(id, "10.128.176.134", "8000", id);
         String messageID = mSocket.clientMessageIDPool.getOneRandomID(id);
         try {
             TransmittedMessage tm = mSocket.clientMessageCreator.UserSignIn("FreeStyleServer", messageID, id, password);
@@ -294,7 +294,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 //进入主界面
                 Main_win fMain=new Main_win(jtfID.getText());
 
-                fMain.setVisible(false);
+                fMain.setVisible(true);
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 
                 OpenFProject op=new OpenFProject(fMain);

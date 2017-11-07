@@ -63,6 +63,10 @@ public class Main_win extends javax.swing.JFrame {
     public void setBtnSaveEditing(){
         btnSaveEditing.setEnabled(isEditing);
     }
+    
+    public void addLayer(Layer lay){
+        jMapPane3.getMapContent().addLayer(lay);
+    }
     /**
      * Creates new form Main_win
      */

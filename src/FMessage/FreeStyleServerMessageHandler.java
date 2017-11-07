@@ -545,7 +545,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         for (int i = 0; i < sResult.size(); i++) {
                             ja.add(sResult.get(i));
                         }
-                        returnData.put("ProjectList", ja);
+                        returnData.put("LayerList", ja);
                         return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
                     } else {
                         returnData.put("ReturnMsg", errorMsg);

@@ -657,6 +657,31 @@ public class Main_win extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_CreatelayerActionPerformed
 
+    /***
+     * wxy获取jMapPane的图片并通过socket将其传至服务器
+     */
+    public void UploadPicture2Server(){
+        try {
+            // TODO add your handling code here:
+            connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
+            BufferedImage image = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = image.getGraphics();
+            if (jMapPane3.getMapContent() != null) {
+                ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
+                Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
+                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+            }
+            OutputStream os = socket_upload.getOutputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", output);
+            os.write(output.toByteArray());
+            os.flush();
+            socket_upload.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
 
@@ -748,25 +773,12 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownLoadActionPerformed
         // TODO add your handling code here:
-         InputStream is = null;
-        try {
-            // TODO add your handling code here:
-            connectServer2Download(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_download")));
-            BufferedImage tempImage = null;
-            is = socket_download.getInputStream();
-            tempImage = ImageIO.read(is);
-            Graphics g = jMapPane3.getGraphics();
-            g.drawImage(tempImage, 0, 0, null);
-            jMapPane3.repaint();
-            socket_download.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        OBFrame OB = new OBFrame(serverConfig);
+        OB.setVisible(true);
+        Thread task = new Thread(OB);
+        task.start();
+        if(!OB.isVisible()){
+            task.stop();
         }
     }//GEN-LAST:event_btnDownLoadActionPerformed
 

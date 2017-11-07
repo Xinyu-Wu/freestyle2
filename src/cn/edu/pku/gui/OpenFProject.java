@@ -202,6 +202,7 @@ public class OpenFProject extends javax.swing.JFrame {
             
             //显示
             SimpleFeatureSource features = (SimpleFeatureSource) hm.get("Features");
+           
             Style style2 = SLD.createSimpleStyle(features.getSchema());
             FeatureLayer layer;
             layer = new FeatureLayer(features,style2,hm.get("LayerName").toString());

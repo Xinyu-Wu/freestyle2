@@ -293,8 +293,14 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 dispose();
                 //进入主界面
                 Main_win fMain=new Main_win(jtfID.getText());
-
-                fMain.setVisible(false);
+                fMain.mSocket = this.mSocket;
+                fMain.mSocket.clientMessageParser.setFMainWin(fMain);
+                fMain.setVisible(true);
+                //测试部分
+                /*
+                String messageID = mSocket.clientMessageIDPool.getOneRandomID("sunqi");
+                mSocket.send(mSocket.clientMessageCreator.CreateProject("FreeStyleServer", messageID, "FProject").convertMessageToString());
+                */
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 
                 OpenFProject op=new OpenFProject(fMain);

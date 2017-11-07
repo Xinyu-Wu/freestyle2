@@ -15,10 +15,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.FeatureCollections;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  *
@@ -162,7 +168,7 @@ public class DBManager {
         Connection dm = null;
         Statement stmt = null;
 //        PostgreSQLManager manager = new PostgreSQLManager();
-        
+
         dm = manager.connetToPostgre(host, port, database, superUser, superUserPwd);
         try {
             stmt = dm.createStatement();
@@ -414,10 +420,10 @@ public class DBManager {
             stmt.executeUpdate(grant);
             stmt.close();
             dm.close();
-            
+
             dm = manager.connetToPostgre(host, port, fp_name, superUser, superUserPwd);
             stmt = dm.createStatement();
-            String sql_postgis = "CREATE EXTENSION postgis" ;
+            String sql_postgis = "CREATE EXTENSION postgis";
             stmt.executeUpdate(sql_postgis);
             System.out.println("Create database " + fp_name + " successfully");
 
@@ -428,7 +434,7 @@ public class DBManager {
                     + "(layer_name VARCHAR(20) PRIMARY KEY NOT NULL,"
                     + "lockstatus VARCHAR(100) )";
             stmt.executeUpdate(create_layers);
-           
+
             stmt.close();
             dm.close();
             System.out.println("New project " + fp_name + " created successfully");
@@ -552,12 +558,7 @@ public class DBManager {
 //        manager.postgisConfig.setUser(superUser);
         dm = manager.connetToPostgre(host, port, fp_name, superUser, superUserPwd);
         try {
-//            manager.postgisConfig.setDatabaseName(fp_name);
-            
             manager.storeFeatureCollectionToPostgis(featureCollection, layer_name);
-            
-//            manager.postgisConfig.setDatabaseName(database);
-            
             stmt = dm.createStatement();
             String sql_exist = "SELECT * FROM layers WHERE layer_name= '" + layer_name + "'";
             ResultSet rs = stmt.executeQuery(sql_exist);
@@ -576,6 +577,26 @@ public class DBManager {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
             success = false;
         }
+        return success;
+    }
+
+    public boolean addFeature(String fp_name, String layer_name, String lockstatus, SimpleFeatureCollection featureCollection) {
+        boolean success = true;
+        SimpleFeatureCollection oriCollection = getCollection(fp_name, layer_name);
+        SimpleFeatureType TYPE = oriCollection.getSchema();
+        SimpleFeatureSource featureSource = DataUtilities.source(oriCollection);
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+        SimpleFeatureCollection newCollection;
+        try {
+            featureStore.addFeatures(featureCollection);
+            newCollection = featureStore.getFeatures();
+            saveLayer(fp_name, layer_name, lockstatus, newCollection);
+            System.out.println("Add feature successfully");
+        } catch (IOException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+            success = false;
+        }
+
         return success;
     }
 
@@ -601,24 +622,32 @@ public class DBManager {
 //        System.out.println(userList);
 //        List<String> projectList=dbm.queryProjectbyUser("yangliu");
 //        System.out.println(projectList);
+        ShapefileManager shpManager = new ShapefileManager();
+        File file = JFileDataStoreChooser.showOpenFile("shp", null);
+        if (file == null) {
+            System.out.print("wrong file");
+        }
+        SimpleFeatureSource featureSource = shpManager.readShpFromFile(file);
+        try {
+            SimpleFeatureCollection featureCollection = featureSource.getFeatures();
+            SimpleFeatureType type=featureCollection.getSchema();
+            System.out.println(type);
+            System.out.println("\n");
+            SimpleFeatureIterator iterator = featureCollection.features();
+            try {
+                while (iterator.hasNext()) {
+                    SimpleFeature feature = iterator.next();
+                    System.out.println(feature);
+                    break;
+                    // process feature
+                }
+            } finally {
+                iterator.close();
+            }
+//            dbm.addFeature("fp1", "test_layer", "yangliu", featureCollection);
+        } catch (IOException ex) {
+            Logger.getLogger(PostgreSQLManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-//        ShapefileManager shpManager = new ShapefileManager();
-//        File file = JFileDataStoreChooser.showOpenFile("shp", null);
-//        if (file == null) {
-//            System.out.print("wrong file");
-//        }
-//        SimpleFeatureSource featureSource = shpManager.readShpFromFile(file);
-//        try {
-//            SimpleFeatureCollection featureCollection = featureSource.getFeatures();
-//            
-//            dbm.saveLayer("fp1", "test_layer", "yangliu", featureCollection);
-//        } catch (IOException ex) {
-//            Logger.getLogger(PostgreSQLManager.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
-
-//SimpleFeatureCollection featureCollection = dbm.getCollection("fp1", "test_layer");
-
-//dbm.deleteLayer("fp1", "test_layer");
     }
 }

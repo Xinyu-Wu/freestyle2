@@ -37,16 +37,25 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         mSocket = new FreeStyleClientPureSocket();
         main=fMain;
         mProject=Project;
+        
     }
     
-    public ShowLayerStatus(Main_win fMain) {
-        initComponents();
-        this.setLocationRelativeTo(null);//屏幕中间显示
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
-        main=fMain;
+   
+
+    public boolean selectProject(String project) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetProjectContetnt("FreeStyleServer", messageID, project);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
-
-
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

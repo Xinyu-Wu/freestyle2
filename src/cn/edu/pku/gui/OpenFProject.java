@@ -5,11 +5,19 @@
  */
 package cn.edu.pku.gui;
 
+import FMessage.FreeStyleClientPureSocket;
+import FMessage.TransmittedMessage;
 import FProject.FProject;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import net.sf.json.JSONArray;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.FeatureLayer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
 
 /**
  *
@@ -19,13 +27,14 @@ public class OpenFProject extends javax.swing.JFrame {
 
     DefaultListModel dlm = new DefaultListModel();
     Main_win main;
+    FreeStyleClientPureSocket mSocket;
     /**
      * Creates new form OpenFProject
      */
     public OpenFProject(Main_win fMain) {
         initComponents();
         this.setLocationRelativeTo(null);
-        
+        mSocket = new FreeStyleClientPureSocket();
         main=fMain;
     }
     public void setList(){
@@ -139,6 +148,71 @@ public class OpenFProject extends javax.swing.JFrame {
         main.setVisible(true);
     }//GEN-LAST:event_btnOpenActionPerformed
 
+     public boolean selectProject(String project) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetProjectContetnt("FreeStyleServer", messageID, project);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean selectProjectReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            
+            JSONArray ja=(JSONArray)hm.get("LayerList");
+            for(int i=0;i<ja.size();i++)
+            {
+                askForLayer(jList1.getSelectedValue(),ja.getString(i));
+            }
+            
+            //关闭当前界面
+            dispose();
+            
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
+    
+     public boolean askForLayer(String project,String layer) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetLayerContent("FreeStyleServer", messageID, project,layer);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean askForLayerReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            
+            //显示
+            SimpleFeatureSource features = (SimpleFeatureSource) hm.get("Features");
+            Style style2 = SLD.createSimpleStyle(features.getSchema());
+            FeatureLayer layer;
+            layer = new FeatureLayer(features,style2,hm.get("LayerName").toString());
+            main.addLayer(layer);
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

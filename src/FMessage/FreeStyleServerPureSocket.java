@@ -426,7 +426,7 @@ public class FreeStyleServerPureSocket {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                DBManager dbmanager = new DBManager("10.128.176.234", "5432", "freestyleUser", "sunqi", "sunqi");
+                DBManager dbmanager = new DBManager("localhost", "5432", "freestyleUser", "postgres", "123");
                 FreeStyleServerPureSocket sps = new FreeStyleServerPureSocket(dbmanager);
                 sps.startActionPerformed(100, "8000");
             }

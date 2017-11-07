@@ -4,8 +4,10 @@ import FMessage.FreeStyleClientPureSocket;
 import FMessage.TransmittedMessage;
 import FProject.FProject;
 import FeatureEdit.FeatureSelection;
+import cn.edu.pku.datasource.DrawEditingFeature;
 import cn.edu.pku.datasource.ShapefileManager;
 import com.sun.prism.paint.Color;
+import com.vividsolutions.jts.io.ParseException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -53,7 +55,12 @@ public class Main_win extends javax.swing.JFrame {
     private HashMap<String, String> serverConfig;
     private Socket socket_upload;
     private Socket socket_download;
+
     FreeStyleClientPureSocket mSocket;
+
+    
+    private DrawEditingFeature drawEditingFeature;
+
 
     public void setBtnSaveEditing(){
         btnSaveEditing.setEnabled(isEditing);
@@ -61,7 +68,7 @@ public class Main_win extends javax.swing.JFrame {
     /**
      * Creates new form Main_win
      */
-    public Main_win(String id) {
+    public Main_win(String id) throws ParseException, Exception {
         initComponents();
         
         mSocket = new FreeStyleClientPureSocket();
@@ -87,19 +94,9 @@ public class Main_win extends javax.swing.JFrame {
                 }
             }
         }));
-        jMapPane3.setBackground(java.awt.Color.white);
         jMapPane3.setMapContent(new MapContent());
-        this.start = new Point(0, 0);
-        this.end = new Point(0, 0);
-        this.linestart = new Point(0, 0);
-        this.lineend = new Point(0, 0);
-        this.temp = new Point(0, 0);
-        BufferedImage newCache = new BufferedImage(jMapPane3.getWidth(), jMapPane3.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        if (cache != null) { //把上个缓存的内容画到新缓存上
-            //这个地方如果Java版本太老无法编译的话的话改用getGraphics()
-            newCache.createGraphics().drawImage(cache, 0, 0, null);
-        }
-        cache = newCache; //交替缓存
+        jMapPane3.setBackground(java.awt.Color.white);
+        drawEditingFeature = new DrawEditingFeature(jMapPane3);
     }
 
     /**
@@ -290,9 +287,6 @@ public class Main_win extends javax.swing.JFrame {
         mapLayerTable1.setName(""); // NOI18N
 
         jMapPane3.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                jMapPane3MouseDragged(evt);
-            }
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 jMapPane3MouseMoved(evt);
             }
@@ -590,54 +584,55 @@ public class Main_win extends javax.swing.JFrame {
         CreateFProject cfp = new CreateFProject(this);
     }//GEN-LAST:event_CreateFProjectActionPerformed
 
-    Point start;
-    Point end;
-    Point temp;
-    int which;
-    Point linestart;
-    Point lineend;
-    BufferedImage cache;
     private void jMapPane3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jMapPane3MouseClicked
-
-    private void jMapPane3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseDragged
-        // TODO add your handling code here:
-        setBackground(java.awt.Color.white);
-        linestart.setLocation(lineend);
-        temp.setLocation(end);
-        end.setLocation(evt.getPoint());
-        lineend.setLocation(evt.getPoint());
-        if (cache != null) {
-            Graphics g = cache.getGraphics(); //替换Graphics，转往缓存上画图
-            g.setColor(java.awt.Color.WHITE);
-            g.drawLine((int) start.getX(), (int) start.getY(), (int) temp.getX(), (int) temp.getY());
-            g.setColor(java.awt.Color.RED);
-            g.drawLine((int) start.getX(), (int) start.getY(), (int) end.getX(), (int) end.getY());
-
-//-----------------------------------------------------------------------
-            Graphics g_orig = jMapPane3.getGraphics();
-//g_orig.clearRect(0, 0, getWidth(), getHeight());
-//g_orig.drawImage(cache, 0, 0, null);
-            ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
-            Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
-            jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
-            g_orig.clearRect(0, 0, getWidth(), getHeight());
-            g_orig.drawImage(cache, 0, 0, null);
-//jMapPane3.repaint();
+        if (isEditing == true) {
+            try {
+                drawEditingFeature.MouseClicked(evt);
+            } catch (Exception ex) {
+                Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-    }//GEN-LAST:event_jMapPane3MouseDragged
+    }//GEN-LAST:event_jMapPane3MouseClicked
 
     private void jMapPane3MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMapPane3MouseMoved
         // TODO add your handling code here:
-        start.setLocation(evt.getPoint());
-        end.setLocation(evt.getPoint());
-        linestart.x = (evt.getX());
-        linestart.y = (evt.getY());
-        lineend.x = (evt.getX());
-        lineend.y = (evt.getY());
+        if (isEditing == true) {
+            setBackground(java.awt.Color.white);
+            drawEditingFeature.MouseMoved(evt);
+            
+        }
     }//GEN-LAST:event_jMapPane3MouseMoved
 
+    /**
+     * StartEditing
+     * 或许传名称并不可行，可以试着传geometrydescription
+     */
+    public void StartEditing(String geometrydescription){
+        isEditing=true;
+        //-------------------------------------------------------------------------
+        Layer editlayer= jMapPane3.getMapContent().layers().get(0);
+        String type= editlayer.getFeatureSource().getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
+        drawEditingFeature.StartEditing(type);
+    }
+    
+    /**
+     * EndEditing
+     */
+    public void EndEditing(){
+        isEditing=false;
+        //--------------------------------------------------------------------------
+        try {
+            drawEditingFeature.EndEditing();
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     //打开本地图层
     private void OpenLayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenLayerActionPerformed
         // TODO add your handling code here:
@@ -671,7 +666,9 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
         // TODO add your handling code here:
+
         ShowLayerStatus sls = new ShowLayerStatus(this,mFProject.getFName());
+
         sls.setVisible(true);
     }//GEN-LAST:event_btnLayerStatusActionPerformed
 
@@ -808,7 +805,11 @@ public class Main_win extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main_win("test").setVisible(true);
+                try {
+                    new Main_win("test").setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

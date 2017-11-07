@@ -244,7 +244,11 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
+                try {
+                    new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(ShowLayerStatus.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

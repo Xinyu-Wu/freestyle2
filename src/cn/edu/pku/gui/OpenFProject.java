@@ -31,10 +31,12 @@ public class OpenFProject extends javax.swing.JFrame {
     /**
      * Creates new form OpenFProject
      */
-    public OpenFProject(Main_win fMain) {
+    public OpenFProject(Main_win fMain,FreeStyleClientPureSocket sSocket) {
         initComponents();
         this.setLocationRelativeTo(null);
-        mSocket = new FreeStyleClientPureSocket();
+        mSocket = sSocket;
+        sSocket.clientMessageParser.fOpenFProject= this;
+        this.setVisible(true);
         main=fMain;
     }
     public void setList(){
@@ -143,8 +145,10 @@ public class OpenFProject extends javax.swing.JFrame {
         String title= "FreeStyle-"+name+ ".prj";
         main.setTitle(title);
         dispose();
-        JOptionPane.showMessageDialog(null,"Project "+name+"\n is open successfully !","FreeStyle",JOptionPane.INFORMATION_MESSAGE);   
-        main.mFProject=new FProject();
+        selectProject(name);
+        
+//        main.mFProject=new FProject();
+        
         main.setVisible(true);
     }//GEN-LAST:event_btnOpenActionPerformed
 
@@ -173,6 +177,7 @@ public class OpenFProject extends javax.swing.JFrame {
             }
             
             //关闭当前界面
+            JOptionPane.showMessageDialog(null,"Project is open successfully !","FreeStyle",JOptionPane.INFORMATION_MESSAGE);   
             dispose();
             
             return true;
@@ -202,6 +207,7 @@ public class OpenFProject extends javax.swing.JFrame {
             
             //显示
             SimpleFeatureSource features = (SimpleFeatureSource) hm.get("Features");
+           
             Style style2 = SLD.createSimpleStyle(features.getSchema());
             FeatureLayer layer;
             layer = new FeatureLayer(features,style2,hm.get("LayerName").toString());
@@ -245,8 +251,8 @@ public class OpenFProject extends javax.swing.JFrame {
             public void run() {
                 Main_win main;
                 try {
-                    main = new Main_win("test");
-                    new OpenFProject(main).setVisible(true);
+                    main = new Main_win("test",new FreeStyleClientPureSocket());
+                    new OpenFProject(main,new FreeStyleClientPureSocket()).setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(OpenFProject.class.getName()).log(Level.SEVERE, null, ex);
                 }

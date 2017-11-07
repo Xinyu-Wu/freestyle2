@@ -70,10 +70,10 @@ public class Main_win extends javax.swing.JFrame {
     /**
      * Creates new form Main_win
      */
-    public Main_win(String id) throws ParseException, Exception {
+    public Main_win(String id , FreeStyleClientPureSocket sSocket) throws ParseException, Exception {
         initComponents();
         
-        mSocket = new FreeStyleClientPureSocket();
+        mSocket = sSocket;
         
         UserID=id;
         this.setTitle("Freestyle");
@@ -591,6 +591,7 @@ public class Main_win extends javax.swing.JFrame {
         if (isEditing == true) {
             try {
                 drawEditingFeature.MouseClicked(evt);
+                UpLoadEditing();
             } catch (Exception ex) {
                 Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -610,11 +611,12 @@ public class Main_win extends javax.swing.JFrame {
      * StartEditing
      * 或许传名称并不可行，可以试着传geometrydescription
      */
-    public void StartEditing(String geometrydescription){
+    
+    public void StartEditing(SimpleFeatureSource featureSource){
         isEditing=true;
         //-------------------------------------------------------------------------
-        Layer editlayer= jMapPane3.getMapContent().layers().get(0);
-        String type= editlayer.getFeatureSource().getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
+        //Layer editlayer= jMapPane3.getMapContent().layers().get(0);
+        String type= featureSource.getSchema().getGeometryDescriptor().toString().split("[<,>,:]")[1];
         drawEditingFeature.StartEditing(type);
     }
     
@@ -749,6 +751,10 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnUpLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpLoadActionPerformed
         // TODO add your handling code here:
+        UpLoadEditing();
+    }//GEN-LAST:event_btnUpLoadActionPerformed
+
+    private void UpLoadEditing(){
          try {
             // TODO add your handling code here:
             connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
@@ -758,7 +764,7 @@ public class Main_win extends javax.swing.JFrame {
             if (jMapPane3.getMapContent() != null) {
                 ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
                 Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
-                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, jMapPane3.getWorldToScreenTransform());
             }
 //            g.drawImage(image, 0, 0, null);
             ImageIO.write(image, "jpg", new File("test.jpg"));
@@ -773,8 +779,9 @@ public class Main_win extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnUpLoadActionPerformed
-
+    }
+            
+    
     private void btnDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownLoadActionPerformed
         // TODO add your handling code here:
         OBFrame OB = new OBFrame(serverConfig);
@@ -818,7 +825,7 @@ public class Main_win extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new Main_win("test").setVisible(true);
+                    new Main_win("test",new FreeStyleClientPureSocket()).setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
                 }

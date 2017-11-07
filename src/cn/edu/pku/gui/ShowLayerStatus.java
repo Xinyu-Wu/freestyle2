@@ -7,13 +7,21 @@ package cn.edu.pku.gui;
 
 import FMessage.FreeStyleClientPureSocket;
 import FMessage.TransmittedMessage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.geotools.map.Layer;
 import javax.swing.JOptionPane;
+import net.sf.json.JSONArray;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.FeatureLayer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
 
 /**
  *
@@ -28,7 +36,10 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     FreeStyleClientPureSocket mSocket;
     String mProject;
     Main_win main;
-    
+     DefaultListModel dlmWL = new DefaultListModel();
+      DefaultListModel dlmOB = new DefaultListModel();
+      //ArrayList<SimpleFeatureSource> ListSFS=new ArrayList<SimpleFeatureSource>();
+    HashMap<String, SimpleFeatureSource> hmsfs = new HashMap<>();
 
     public ShowLayerStatus(Main_win fMain,String Project) {
         initComponents();
@@ -41,7 +52,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     }
     
    
-
     public boolean selectProject(String project) {
 
         String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
@@ -54,7 +64,66 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             return false;
         }
     }
+
+    public boolean selectProjectReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            
+            JSONArray ja=(JSONArray)hm.get("LayerList");
+            for(int i=0;i<ja.size();i++)
+            {
+                askForLayer(mProject,ja.getString(i));
+            }
+            
+            //关闭当前界面
+            dispose();
+            
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
     
+     public boolean askForLayer(String project,String layer) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetLayerContent("FreeStyleServer", messageID, project,layer);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean askForLayerReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            
+            //显示
+            String layer = hm.get("LayerName").toString();
+            hmsfs.put(layer, (SimpleFeatureSource)hm.get("Features"));
+            if(hm.get("LayerStatus").toString().equals("Editing"))
+            {
+                dlmOB.addElement(layer);
+                jListOB.setModel(dlmOB);
+            }
+            else{
+                dlmWL.addElement(layer);
+                jListWL.setModel(dlmWL);
+            }
+                
+            
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
     
 
     /**
@@ -191,6 +260,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             main.CurrentLayer=jListWL.getSelectedValue();
             main.isEditing=true;
             main.setBtnSaveEditing();
+            main.StartEditing(hmsfs.get(main.CurrentLayer));
             
             return true;
         } else {
@@ -237,9 +307,9 @@ public class ShowLayerStatus extends javax.swing.JFrame {
      * StartEditing
      * 或许传名称并不可行，可以试着传geometrydescription
      */
-    private void StartEditing(String Layername){
+    private void StartEditing(SimpleFeatureSource sfs){
         
-        main.StartEditing(Layername);
+        main.StartEditing(sfs);
     }
     /**
      * @param args the command line arguments
@@ -274,7 +344,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
+                    new ShowLayerStatus(new Main_win("testID",new FreeStyleClientPureSocket()),"test").setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(ShowLayerStatus.class.getName()).log(Level.SEVERE, null, ex);
                 }

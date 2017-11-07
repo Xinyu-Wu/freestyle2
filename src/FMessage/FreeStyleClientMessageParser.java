@@ -8,6 +8,7 @@ package FMessage;
 import cn.edu.pku.gui.FLogin;
 import cn.edu.pku.gui.Main_win;
 import cn.edu.pku.gui.ShowLayerStatus;
+import cn.edu.pku.gui.OpenFProject;
 import java.util.HashMap;
 
 /**
@@ -23,6 +24,7 @@ public class FreeStyleClientMessageParser extends MessageParser {
     public FLogin fLogin;
     public Main_win fMainWin;
     public ShowLayerStatus fShowLayerStatus;
+    public OpenFProject fOpenFProject;
 
     public void setFLogin(FLogin flogin) {
         fLogin = flogin;
@@ -250,60 +252,18 @@ public class FreeStyleClientMessageParser extends MessageParser {
 
     @Override
     public String GetProjectContetnt(TransmittedMessage transMsg) throws Exception {
-        String sender = transMsg.getSender();
-        String receiver = transMsg.getReceiver();
-        long sendTime = transMsg.getTimeStamp();
-        String sendMsgId = transMsg.getMessageId();
-        String sendMsgType = transMsg.getMessageType();
-        FOperationCode sendCode = transMsg.getCode();
-        FOperationStatus sendStatus = transMsg.getStatus();
-        HashMap<String, Object> returnData = transMsg.getData();
-        if (!sender.equals(this.getOwner()) || !"Response".equals(sendMsgType) || sendStatus != FOperationStatus.Send) {
-            return null;
-        } else {
-            if (sendCode != FOperationCode.GetProjectContetnt) {
-                //根据对应的操作类型进行更改
-                return null;
-            } else {
-                //基本信息正确，进行下一步具体的操作
-                try {
-                    //执行操作 每个消息处理方式不同
-                    return "OK";
-                } catch (Exception err) {
-                    //输出报错信息
-                    return "Error";
-                }
-            }
+        if (fOpenFProject.selectProjectReceive(transMsg)) {
+            return "OK in GetProjectContetnt";
         }
+        else return "Error in GetProjectContetnt";
     }
 
     @Override
     public String GetLayerContent(TransmittedMessage transMsg) throws Exception {
-        String sender = transMsg.getSender();
-        String receiver = transMsg.getReceiver();
-        long sendTime = transMsg.getTimeStamp();
-        String sendMsgId = transMsg.getMessageId();
-        String sendMsgType = transMsg.getMessageType();
-        FOperationCode sendCode = transMsg.getCode();
-        FOperationStatus sendStatus = transMsg.getStatus();
-        HashMap<String, Object> returnData = transMsg.getData();
-        if (!sender.equals(this.getOwner()) || !"Response".equals(sendMsgType) || sendStatus != FOperationStatus.Send) {
-            return null;
-        } else {
-            if (sendCode != FOperationCode.GetLayerContent) {
-                //根据对应的操作类型进行更改
-                return null;
-            } else {
-                //基本信息正确，进行下一步具体的操作
-                try {
-                    //执行操作 每个消息处理方式不同
-                    return "OK";
-                } catch (Exception err) {
-                    //输出报错信息
-                    return "Error";
-                }
-            }
+        if (fOpenFProject.askForLayerReceive(transMsg)) {
+            return "Ok in GetLayerContent";
         }
+        else return "Error in GetLayerContent";
     }
 
     @Override

@@ -34,6 +34,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
     JPasswordField jpf;//密码
     FreeStyleClientPureSocket mSocket;
 
+    static String fServerIP = "10.128.176.234";
+    static String fServerPort = "8000";
     /**
      * Creates new form login
      */
@@ -156,7 +158,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 break;
             case "重置":
                 clear();
-                break;
+                break; 
+                
         }
     }
 
@@ -267,15 +270,18 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.*/
         mSocket.ownerChanged(id);
         mSocket.clientMessageParser.setFLogin(this);
-        mSocket.connectActionPerformed(id, "10.128.176.134", "8000", id);
+        if (mSocket.isConnected == false) {
+            mSocket.connectActionPerformed(id, fServerIP, fServerPort, id);
+        }
         String messageID = mSocket.clientMessageIDPool.getOneRandomID(id);
         try {
             TransmittedMessage tm = mSocket.clientMessageCreator.UserSignIn("FreeStyleServer", messageID, id, password);
-            mSocket.clientMessageParser.UserSignIn = this::userLoginReceive;
+            //mSocket.clientMessageParser.UserSignIn = this::userLoginReceive;
             System.out.println("FLogin:\r\n" + tm.convertMessageToString());
             mSocket.send(tm.convertMessageToString());
             return true;
         } catch (Exception ex) {
+            mSocket.closeConnection();
             Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -293,8 +299,14 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 dispose();
                 //进入主界面
                 Main_win fMain=new Main_win(jtfID.getText(),this.mSocket);
-
+                fMain.mSocket = this.mSocket;
+                fMain.mSocket.clientMessageParser.setFMainWin(fMain);
                 fMain.setVisible(false);
+                //测试部分
+                /*
+                String messageID = mSocket.clientMessageIDPool.getOneRandomID("sunqi");
+                mSocket.send(mSocket.clientMessageCreator.CreateProject("FreeStyleServer", messageID, "FProject").convertMessageToString());
+                */
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 
                 OpenFProject op=new OpenFProject(fMain,this.mSocket);

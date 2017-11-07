@@ -597,6 +597,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     String projectName = sendData.get("ProjectName").toString();
                     String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
+                    String layerStatus = "";
                     SimpleFeatureSource returnSource = null;
                     SimpleFeatureCollection returnCollection;
                     String sCachePath = sendMsgId + ".shp";
@@ -604,6 +605,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     try {
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         //ListFeatureCollection lfc;
+                        layerStatus = dbManager.checkLayerLock(projectName, layerName);
 
                         returnCollection = dbManager.getCollection(projectName, layerName);
                         SimpleFeatureType featureType = returnCollection.getSchema();
@@ -635,6 +637,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     }
                     if (isSuccessed == true) {
                         returnData.put("ReturnMsg", "OK");
+                        returnData.put("LayerName", layerName);
+                        returnData.put("LayerStatus", layerName);
                         returnData.put("Features", returnSource);
                         //TODO
                         return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
@@ -1041,8 +1045,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         //dbManager.属性查询
                         String status = dbManager.checkLayerLock(projectName, layerName);
-                        if (status == null || !"READ".equals(status)) {
-                            isSuccessed = true;
+                        if (status == null || "None".equals(status)) {
+                            isSuccessed = dbManager.setLayerLock(projectName, layerName, receiver);
                         } else {
                             errorMsg = "该图层当前已经有了写锁，不能获取写锁！";
                         }
@@ -1109,13 +1113,14 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //TODO 等接口完善
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         String status = dbManager.checkLayerLock(projectName, layerName);
-                        if (status == null || !"WRITE".equals(status)) {
+                        if (status == null || "None".equals(status)) {
                             errorMsg = "该图层当前没有写锁，不能释放写锁！";
-                            isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
+                            isSuccessed = dbManager.setLayerLock(projectName, layerName, "None");
+                        } else if (status.equals(receiver)) {
+                            isSuccessed = dbManager.setLayerLock(projectName, layerName, "None");
                         } else {
                             //有读锁的情况下可以有写锁
-                            //errorMsg = "该图层已经有了Write锁";
-                            isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
+                            errorMsg = "该图层已有Write锁，但不是你的写锁";
                         }
 
                     } catch (Exception ex) {

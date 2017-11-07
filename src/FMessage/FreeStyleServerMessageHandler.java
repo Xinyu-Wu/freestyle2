@@ -535,7 +535,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     try {
                         //TODO 等接口完善
                         sResult = dbManager.openProject(projectName, receiver);
-                        //isSuccessed = true;
+                        isSuccessed = true;
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }

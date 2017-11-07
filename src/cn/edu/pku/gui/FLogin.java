@@ -292,12 +292,12 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 //关闭当前界面
                 dispose();
                 //进入主界面
-                Main_win fMain=new Main_win(jtfID.getText());
+                Main_win fMain=new Main_win(jtfID.getText(),this.mSocket);
 
-                fMain.setVisible(true);
+                fMain.setVisible(false);
                 JSONArray ja = (JSONArray) hm.get("ProjectList");
                 
-                OpenFProject op=new OpenFProject(fMain);
+                OpenFProject op=new OpenFProject(fMain,this.mSocket);
                 for(int i=0;i<ja.size();i++)
                 {
                     op.dlm.addElement(ja.get(i).toString());
@@ -339,7 +339,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
                 //关闭当前界面
                 dispose();
                 //进入主界面
-                Main_win fMain = new Main_win(jtfID.getText());
+                Main_win fMain = new Main_win(jtfID.getText(),this.mSocket);
                 fMain.setVisible(false);
                 
                 CreateFProject cfp=new CreateFProject(fMain);

@@ -70,10 +70,10 @@ public class Main_win extends javax.swing.JFrame {
     /**
      * Creates new form Main_win
      */
-    public Main_win(String id) throws ParseException, Exception {
+    public Main_win(String id , FreeStyleClientPureSocket sSocket) throws ParseException, Exception {
         initComponents();
         
-        mSocket = new FreeStyleClientPureSocket();
+        mSocket = sSocket;
         
         UserID=id;
         this.setTitle("Freestyle");
@@ -818,7 +818,7 @@ public class Main_win extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new Main_win("test").setVisible(true);
+                    new Main_win("test",new FreeStyleClientPureSocket()).setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -591,6 +591,7 @@ public class Main_win extends javax.swing.JFrame {
         if (isEditing == true) {
             try {
                 drawEditingFeature.MouseClicked(evt);
+                UpLoadEditing();
             } catch (Exception ex) {
                 Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -749,6 +750,10 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnUpLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpLoadActionPerformed
         // TODO add your handling code here:
+        UpLoadEditing();
+    }//GEN-LAST:event_btnUpLoadActionPerformed
+
+    private void UpLoadEditing(){
          try {
             // TODO add your handling code here:
             connectServer2Upload(serverConfig.get("ip"), Integer.parseInt(serverConfig.get("port_upload")));
@@ -758,7 +763,7 @@ public class Main_win extends javax.swing.JFrame {
             if (jMapPane3.getMapContent() != null) {
                 ReferencedEnvelope mapArea = jMapPane3.getMapContent().getMaxBounds();
                 Rectangle rectangle = new Rectangle(jMapPane3.getWidth(), jMapPane3.getHeight());
-                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                jMapPane3.getRenderer().paint((Graphics2D) g, rectangle, jMapPane3.getWorldToScreenTransform());
             }
 //            g.drawImage(image, 0, 0, null);
             ImageIO.write(image, "jpg", new File("test.jpg"));
@@ -773,8 +778,9 @@ public class Main_win extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Main_win.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnUpLoadActionPerformed
-
+    }
+            
+    
     private void btnDownLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDownLoadActionPerformed
         // TODO add your handling code here:
         OBFrame OB = new OBFrame(serverConfig);

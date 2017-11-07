@@ -11,11 +11,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-<<<<<<< HEAD
 import javax.swing.JOptionPane;
-=======
 import org.geotools.map.Layer;
->>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
 
 /**
  *
@@ -26,15 +23,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     FreeStyleClientPureSocket mSocket;
     String mProject;
     Main_win main;
-    /**
-     * Creates new form ShowLayerStatus
-     */
-<<<<<<< HEAD
-   /* public ShowLayerStatus() {
-        initComponents();
-        this.setLocationRelativeTo(null);//屏幕中间显示
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
-    }*/
     
     public ShowLayerStatus(Main_win fMain,String Project) {
         initComponents();
@@ -43,9 +31,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         mSocket = new FreeStyleClientPureSocket();
         main=fMain;
         mProject=Project;
-        
-=======
-    Main_win main;
+    }
     
     public ShowLayerStatus(Main_win fMain) {
         initComponents();
@@ -59,7 +45,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
         main=fMain;
->>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
     }
 
     /**
@@ -149,7 +134,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
 
     private void btnWLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWLActionPerformed
         // TODO add your handling code here:
-<<<<<<< HEAD
         String layer=jListWL.getSelectedValue();
         if(layer==null)
         {
@@ -157,15 +141,12 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         }
         else
             WLApply(mProject,layer);
-=======
-        String layer = jListWL.getSelectedValue();
->>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
+        layer = jListWL.getSelectedValue();
         //fyn：传给服务器申请权限，申请好要enablesaveEditing按钮
     }//GEN-LAST:event_btnWLActionPerformed
 
     private void btnOBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOBActionPerformed
         // TODO add your handling code here:
-<<<<<<< HEAD
         String layer=jListOB.getSelectedValue();
         if(layer==null)
         {
@@ -174,7 +155,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         else
             OBApply(mProject,layer);
         //fyn：传给服务器申请权限
-    }//GEN-LAST:event_btnOBActionPerformed
+    }                                     
 
     public boolean WLApply(String project, String layer) {
 
@@ -239,8 +220,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
             return false;
         }
-=======
-        String layer = jListOB.getSelectedValue();
         //fyn：传给服务器申请权限
     }//GEN-LAST:event_btnOBActionPerformed
 
@@ -252,7 +231,6 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     private void StartEditing(String Layername){
         
         main.StartEditing(Layername);
->>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
     }
     /**
      * @param args the command line arguments
@@ -286,15 +264,11 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-<<<<<<< HEAD
                 try {
                     new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(ShowLayerStatus.class.getName()).log(Level.SEVERE, null, ex);
                 }
-=======
-                //new ShowLayerStatus().setVisible(true);
->>>>>>> 96aa10d0490ec1ce54ada76af90708758ccd2b6b
             }
         });
     }

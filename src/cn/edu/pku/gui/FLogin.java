@@ -34,6 +34,8 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
     JPasswordField jpf;//密码
     FreeStyleClientPureSocket mSocket;
 
+    static String fServerIP = "10.128.176.234";
+    static String fServerPort = "8000";
     /**
      * Creates new form login
      */
@@ -267,15 +269,18 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.*/
         mSocket.ownerChanged(id);
         mSocket.clientMessageParser.setFLogin(this);
-        mSocket.connectActionPerformed(id, "10.128.176.234", "8000", id);
+        if (mSocket.isConnected == false) {
+            mSocket.connectActionPerformed(id, fServerIP, fServerPort, id);
+        }
         String messageID = mSocket.clientMessageIDPool.getOneRandomID(id);
         try {
             TransmittedMessage tm = mSocket.clientMessageCreator.UserSignIn("FreeStyleServer", messageID, id, password);
-            mSocket.clientMessageParser.UserSignIn = this::userLoginReceive;
+            //mSocket.clientMessageParser.UserSignIn = this::userLoginReceive;
             System.out.println("FLogin:\r\n" + tm.convertMessageToString());
             mSocket.send(tm.convertMessageToString());
             return true;
         } catch (Exception ex) {
+            mSocket.closeConnection();
             Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }

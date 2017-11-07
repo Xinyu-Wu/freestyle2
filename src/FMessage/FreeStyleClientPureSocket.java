@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
 public class FreeStyleClientPureSocket {
 
     private DefaultListModel listModel;
-    private boolean isConnected = false;
+    public boolean isConnected = false;
     public ArrayList<String> ListUser;
 
     private String ThisName;

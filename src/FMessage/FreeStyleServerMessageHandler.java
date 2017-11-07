@@ -535,7 +535,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     try {
                         //TODO 等接口完善
                         sResult = dbManager.openProject(projectName, receiver);
-                        //isSuccessed = true;
+                        isSuccessed = true;
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -545,7 +545,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         for (int i = 0; i < sResult.size(); i++) {
                             ja.add(sResult.get(i));
                         }
-                        returnData.put("ProjectList", ja);
+                        returnData.put("LayerList", ja);
                         return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);
                     } else {
                         returnData.put("ReturnMsg", errorMsg);
@@ -597,6 +597,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     String projectName = sendData.get("ProjectName").toString();
                     String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
+                    String layerStatus = "";
                     SimpleFeatureSource returnSource = null;
                     SimpleFeatureCollection returnCollection;
                     String sCachePath = sendMsgId + ".shp";
@@ -604,6 +605,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     try {
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         //ListFeatureCollection lfc;
+                        layerStatus = dbManager.checkLayerLock(projectName, layerName);
 
                         returnCollection = dbManager.getCollection(projectName, layerName);
                         SimpleFeatureType featureType = returnCollection.getSchema();
@@ -635,6 +637,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                     }
                     if (isSuccessed == true) {
                         returnData.put("ReturnMsg", "OK");
+                        returnData.put("LayerName", layerName);
+                        returnData.put("LayerStatus", layerName);
                         returnData.put("Features", returnSource);
                         //TODO
                         return new TransmittedMessage(this.getOwner(), receiver, System.currentTimeMillis() / 1000, "Response", sendMsgId, sendCode, FOperationStatus.Return, returnData);

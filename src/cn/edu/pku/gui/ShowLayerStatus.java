@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 package cn.edu.pku.gui;
+
 import FMessage.FreeStyleClientPureSocket;
 import FMessage.TransmittedMessage;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import org.geotools.map.Layer;
 import javax.swing.JOptionPane;
 
@@ -22,10 +24,10 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     /**
      * Creates new form ShowLayerStatus
      */
+
     FreeStyleClientPureSocket mSocket;
     String mProject;
     Main_win main;
-    
     
 
     public ShowLayerStatus(Main_win fMain,String Project) {
@@ -36,6 +38,15 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         main=fMain;
         mProject=Project;
     }
+    
+    public ShowLayerStatus(Main_win fMain) {
+        initComponents();
+        this.setLocationRelativeTo(null);//屏幕中间显示
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
+        main=fMain;
+    }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -144,7 +155,7 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         else
             OBApply(mProject,layer);
         //fyn：传给服务器申请权限
-    }//GEN-LAST:event_btnOBActionPerformed
+    }                                     
 
     public boolean WLApply(String project, String layer) {
 
@@ -158,8 +169,8 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             return false;
         }
     }
-    
-     public boolean WLApplyReceive(TransmittedMessage tm) {
+
+    public boolean WLApplyReceive(TransmittedMessage tm) {
         HashMap<String, Object> hm = new HashMap<>();
         hm = tm.getData();
         if (hm.get("ReturnMsg").toString().equals("OK")) {
@@ -178,8 +189,8 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             return false;
         }
     }
-     
-      public boolean OBApply(String project, String layer) {
+    
+    public boolean OBApply(String project, String layer) {
 
         String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
         try {
@@ -209,7 +220,10 @@ public class ShowLayerStatus extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
             return false;
         }
-    }
+        //fyn：传给服务器申请权限
+    }//GEN-LAST:event_btnOBActionPerformed
+
+
     /**
      * StartEditing
      * 或许传名称并不可行，可以试着传geometrydescription
@@ -250,7 +264,11 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                //new ShowLayerStatus().setVisible(true);
+                try {
+                    new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(ShowLayerStatus.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

@@ -594,18 +594,17 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     SimpleFeatureSource returnSource = null;
                     SimpleFeatureCollection returnCollection;
                     String sCachePath = sendMsgId + ".shp";
                     boolean isSuccessed = false;
                     try {
-                        //TODO 等接口完善
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         //ListFeatureCollection lfc;
-                        
+
                         returnCollection = dbManager.getCollection(projectName, layerName);
                         SimpleFeatureType featureType = returnCollection.getSchema();
                         Map<String, Serializable> params = new HashMap<>();
@@ -656,7 +655,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
 
     /**
      * 释放图层读锁
-     * @deprecated 
+     *
+     * @deprecated
      * @param transMsg
      * @return
      * @throws Exception
@@ -686,8 +686,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -697,13 +697,10 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         String status = dbManager.checkLayerLock(projectName, layerName);
                         if (status == null) {
                             errorMsg = "该图层当前没有锁";
-                        }
-                        else if (status == "READ") {
+                        } else if (status == "READ") {
                             //好像不用更改
                             isSuccessed = true;
-                        }
-                        else
-                        {
+                        } else {
                             //有读锁的情况下可以有写锁
                             //errorMsg = "该图层已经有了Write锁";
                             isSuccessed = true;
@@ -730,11 +727,10 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-    
-    
     /**
      * 获取图层写锁
-     * @deprecated 
+     *
+     * @deprecated
      * @param transMsg
      * @return
      * @throws Exception
@@ -764,8 +760,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -774,15 +770,12 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //ListFeatureCollection lfc;
                         String status = dbManager.checkLayerLock(projectName, layerName);
                         if (status == null) {
-                            
+
                             isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
-                        }
-                        else if ("READ".equals(status)) {
+                        } else if ("READ".equals(status)) {
                             //好像不用更改
                             isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
-                        }
-                        else
-                        {
+                        } else {
                             //有读锁的情况下可以有写锁
                             //errorMsg = "该图层已经有了Write锁";
                             isSuccessed = true;
@@ -811,7 +804,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
 
     /**
      * 获取查询结果
-     * @deprecated 
+     *
+     * @deprecated
      * @param transMsg
      * @return
      * @throws Exception
@@ -841,16 +835,16 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
-                    String sql =sendData.get("SQL").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
+                    String sql = sendData.get("SQL").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
                         //TODO 等接口完善
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         //dbManager.属性查询
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -875,6 +869,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
 
     /**
      * 获取暗中观察锁
+     *
      * @param transMsg
      * @return
      * @throws Exception
@@ -904,24 +899,22 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
                         //TODO 等接口完善
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         String status = dbManager.checkLayerLock(projectName, layerName);
-                        if (status ==null || !"WRITE".equals(status)) {
+                        if (status == null || !"WRITE".equals(status)) {
                             errorMsg = "该图层当前没有写锁，不能暗中观察！";
-                        }
-                        else
-                        {
+                        } else {
                             //有读锁的情况下可以有写锁
                             //errorMsg = "该图层已经有了Write锁";
                             isSuccessed = true;
                         }
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -944,8 +937,9 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-     /**
+    /**
      * 释放暗中观察锁
+     *
      * @param transMsg
      * @return
      * @throws Exception
@@ -975,24 +969,22 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
                         //TODO 等接口完善
                         //sResult = dbManager.getLayerNamesByProjectName(projectName);
                         String status = dbManager.checkLayerLock(projectName, layerName);
-                        if (status ==null || !"WRITE".equals(status)) {
+                        if (status == null || !"WRITE".equals(status)) {
                             errorMsg = "该图层当前没有写锁，不能释放暗中观察！";
-                        }
-                        else
-                        {
+                        } else {
                             //有读锁的情况下可以有写锁
                             //errorMsg = "该图层已经有了Write锁";
                             isSuccessed = true;
                         }
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1040,8 +1032,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -1051,13 +1043,10 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         String status = dbManager.checkLayerLock(projectName, layerName);
                         if (status == null || !"READ".equals(status)) {
                             isSuccessed = true;
-                        }
-                        else
-                        {
+                        } else {
                             errorMsg = "该图层当前已经有了写锁，不能获取写锁！";
                         }
-                        
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1082,6 +1071,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
 
     /**
      * 释放图层写锁
+     *
      * @param transMsg
      * @return
      * @throws Exception
@@ -1111,8 +1101,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "Default Message";
                     boolean isSuccessed = false;
                     try {
@@ -1122,14 +1112,12 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         if (status == null || !"WRITE".equals(status)) {
                             errorMsg = "该图层当前没有写锁，不能释放写锁！";
                             isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
-                        }
-                        else
-                        {
+                        } else {
                             //有读锁的情况下可以有写锁
                             //errorMsg = "该图层已经有了Write锁";
                             isSuccessed = dbManager.setLayerLock(projectName, layerName, "READ");
                         }
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1177,17 +1165,15 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
+                    SimpleFeatureSource features = (SimpleFeatureSource) sendData.get("Features");
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
-                        //TODO 等接口完善
-                        //sResult = dbManager.getLayerNamesByProjectName(projectName);
-                        //dbManager.属性查询
-                        //String status = dbManager.添加图层(projectName, layerName);
-                        throw new Exception("AddOneNewLayer 尚未实现");
-                        
+                        //TODO 不知道调用这个接口对不对...
+                        isSuccessed = dbManager.saveLayer(projectName, layerName, "READ", features.getFeatures());
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1235,16 +1221,13 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
-                        //TODO 等接口完善
-                        //sResult = dbManager.getLayerNamesByProjectName(projectName);
-                        //dbManager.属性查询
                         isSuccessed = dbManager.deleteLayer(projectName, layerName);
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1292,17 +1275,15 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
+                    SimpleFeatureSource features = (SimpleFeatureSource) sendData.get("Features");
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
-                        //TODO 等接口完善
-                        //sResult = dbManager.getLayerNamesByProjectName(projectName);
-                        //dbManager.属性查询
-                        //String status = dbManager.添加图层(projectName, layerName);
-                        throw new Exception("AddFeatures 尚未实现");
-                        
+                        //warning 传Feature的时候要把全部数据传回来
+                        isSuccessed = dbManager.saveLayer(projectName, layerName, "READ", features.getFeatures());
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1325,7 +1306,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-     @Override
+    @Override
     public TransmittedMessage ModifyFeatures(TransmittedMessage transMsg) throws Exception {
         //获取transMsg 对应的参数
         String receiver = transMsg.getSender();
@@ -1350,8 +1331,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -1360,7 +1341,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //dbManager.属性查询
                         //String status = dbManager.添加图层(projectName, layerName);
                         throw new Exception("ModifyFeatures 尚未实现");
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1383,8 +1364,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-    
-     @Override
+    @Override
     public TransmittedMessage DeleteFeatures(TransmittedMessage transMsg) throws Exception {
         //获取transMsg 对应的参数
         String receiver = transMsg.getSender();
@@ -1409,8 +1389,8 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
-                    String layerName = sendData.get("layerName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
+                    String layerName = sendData.get("LayerName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -1419,7 +1399,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //dbManager.属性查询
                         //String status = dbManager.添加图层(projectName, layerName);
                         throw new Exception("DeleteFeatures 尚未实现");
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1442,7 +1422,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-     @Override
+    @Override
     public TransmittedMessage CreateProject(TransmittedMessage transMsg) throws Exception {
         //获取transMsg 对应的参数
         String receiver = transMsg.getSender();
@@ -1467,7 +1447,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -1476,7 +1456,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //dbManager.属性查询
                         //String status = dbManager.添加图层(projectName, layerName);
                         isSuccessed = dbManager.newProject(projectName, receiver);
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1499,7 +1479,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-     @Override
+    @Override
     public TransmittedMessage DeleteProject(TransmittedMessage transMsg) throws Exception {
         //获取transMsg 对应的参数
         String receiver = transMsg.getSender();
@@ -1524,7 +1504,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                 //基本信息正确，进行下一步具体的操作
                 try {
                     //执行操作 每个消息处理方式不同
-                    String projectName = sendData.get("projectName").toString();
+                    String projectName = sendData.get("ProjectName").toString();
                     String errorMsg = "";
                     boolean isSuccessed = false;
                     try {
@@ -1533,7 +1513,7 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
                         //dbManager.属性查询
                         //String status = dbManager.添加图层(projectName, layerName);
                         isSuccessed = dbManager.deleteProject(projectName);
-                        
+
                     } catch (Exception ex) {
                         errorMsg = ex.getMessage();
                     }
@@ -1556,8 +1536,6 @@ public class FreeStyleServerMessageHandler extends MessageHandler {
         }
     }
 
-    
-    
     /**
      * 模板
      *

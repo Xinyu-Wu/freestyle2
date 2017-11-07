@@ -709,8 +709,7 @@ public class Main_win extends javax.swing.JFrame {
             return false;
         }
     }
-    
-    
+
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         // TODO add your handling code here:
         ServerConfig configFrame = new ServerConfig();

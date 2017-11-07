@@ -182,7 +182,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         } else if (jpf.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "请输入密码!", "FreeStyle", JOptionPane.WARNING_MESSAGE);
         } else {
-            userLogin(jtfID.getText(), jpf.getText());
+            userRegister(jtfID.getText(), jpf.getText());
         }
     }
 
@@ -323,7 +323,7 @@ public class FLogin extends javax.swing.JFrame implements ActionListener {
         }
     }
 
-    private boolean userRegisterReceive(TransmittedMessage tm) {
+    public boolean userRegisterReceive(TransmittedMessage tm) {
         HashMap<String, Object> hm = new HashMap<>();
         hm = tm.getData();
         if (hm.get("ReturnMsg").toString().equals("Welcome")) {

@@ -1,5 +1,7 @@
 package cn.edu.pku.gui;
 
+import FMessage.FreeStyleClientPureSocket;
+import FMessage.TransmittedMessage;
 import FProject.FProject;
 import FeatureEdit.FeatureSelection;
 import cn.edu.pku.datasource.ShapefileManager;
@@ -41,21 +43,29 @@ import org.geotools.swing.tool.ZoomOutTool;
 public class Main_win extends javax.swing.JFrame {
 
     private boolean isSelected = false;
-    private boolean isEditing = false;
+    public boolean isEditing = false;
     private Style originStyle = null;
     public FProject mFProject = null;
+    public String CurrentLayer="";
     
     public String UserID="";
 
     private HashMap<String, String> serverConfig;
     private Socket socket_upload;
     private Socket socket_download;
+    FreeStyleClientPureSocket mSocket;
 
+    public void setBtnSaveEditing(){
+        btnSaveEditing.setEnabled(isEditing);
+    }
     /**
      * Creates new form Main_win
      */
     public Main_win(String id) {
         initComponents();
+        
+        mSocket = new FreeStyleClientPureSocket();
+        
         UserID=id;
         this.setTitle("Freestyle");
         this.setLocationRelativeTo(null);
@@ -661,15 +671,52 @@ public class Main_win extends javax.swing.JFrame {
 
     private void btnLayerStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLayerStatusActionPerformed
         // TODO add your handling code here:
-        ShowLayerStatus sls = new ShowLayerStatus();
+        ShowLayerStatus sls = new ShowLayerStatus(this,mFProject.getFName());
         sls.setVisible(true);
     }//GEN-LAST:event_btnLayerStatusActionPerformed
 
     private void btnSaveEditingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveEditingActionPerformed
         // TODO add your handling code here:
-        //此处需要添加图层保存到数据库的函数操作
+        //fyn:此处需要添加图层保存到数据库的函数操作
+        
+        WLRelease(mFProject.getFName(), CurrentLayer);
+        
+        
     }//GEN-LAST:event_btnSaveEditingActionPerformed
 
+    public boolean WLRelease(String project, String layer) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.ReleaseLayerWriteLock("FreeStyleServer", messageID, project, layer);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean WLReleaseReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            JOptionPane.showMessageDialog(null, "Save successfully ！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
+           
+            //关闭当前界面
+            dispose();
+
+            CurrentLayer="";
+            isEditing=false;
+            setBtnSaveEditing();
+            
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
+    
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         // TODO add your handling code here:
         ServerConfig configFrame = new ServerConfig();

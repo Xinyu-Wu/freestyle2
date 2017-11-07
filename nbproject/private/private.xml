@@ -4,11 +4,14 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/ServerConfig.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/OBForm.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/OpenFProject.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/FMessage/FreeStyleClientMessageCreator.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/FMessage/FreeStyleServerMessageHandler.java</file>
             <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/Main_win.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/datasource/ShapefileManager.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/ShowLayerStatus.java</file>
             <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/FLogin.java</file>
-            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/datasource/DBManager.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/CreateLayer.java</file>
+            <file>file:/C:/study/semester1/GISAlgorithmAndApplication/freestyle2/src/cn/edu/pku/gui/CreateFProject.java</file>
         </group>
     </open-files>
 </project-private>

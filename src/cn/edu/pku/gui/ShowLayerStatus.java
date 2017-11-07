@@ -5,7 +5,14 @@
  */
 package cn.edu.pku.gui;
 
+import FMessage.FreeStyleClientPureSocket;
+import FMessage.TransmittedMessage;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.geotools.map.Layer;
 
 /**
  *
@@ -13,21 +20,31 @@ import javax.swing.JFrame;
  */
 public class ShowLayerStatus extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ShowLayerStatus
-     */
-    public ShowLayerStatus() {
+    FreeStyleClientPureSocket mSocket;
+    String mProject;
+    Main_win main;
+    
+    public ShowLayerStatus(Main_win fMain,String Project) {
         initComponents();
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
+        mSocket = new FreeStyleClientPureSocket();
+        main=fMain;
+        mProject=Project;
     }
     
-    public ShowLayerStatus(String Project) {
+    public ShowLayerStatus(Main_win fMain) {
         initComponents();
         this.setLocationRelativeTo(null);//屏幕中间显示
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
-        
-        
+        main=fMain;
+    }
+
+    public ShowLayerStatus(String Project,Main_win fMain) {
+        initComponents();
+        this.setLocationRelativeTo(null);//屏幕中间显示
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//退出关闭
+        main=fMain;
     }
 
     /**
@@ -118,19 +135,109 @@ public class ShowLayerStatus extends javax.swing.JFrame {
     private void btnWLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWLActionPerformed
         // TODO add your handling code here:
         String layer=jListWL.getSelectedValue();
+        if(layer==null)
+        {
+            JOptionPane.showMessageDialog(null, "Please choose a layer！", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+        }
+        else
+            WLApply(mProject,layer);
+        layer = jListWL.getSelectedValue();
         //fyn：传给服务器申请权限，申请好要enablesaveEditing按钮
     }//GEN-LAST:event_btnWLActionPerformed
 
     private void btnOBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOBActionPerformed
         // TODO add your handling code here:
         String layer=jListOB.getSelectedValue();
+        if(layer==null)
+        {
+            JOptionPane.showMessageDialog(null, "Please choose a layer！", "FreeStyle", JOptionPane.WARNING_MESSAGE);
+        }
+        else
+            OBApply(mProject,layer);
+        //fyn：传给服务器申请权限
+    }                                     
+
+    public boolean WLApply(String project, String layer) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetLayerWriteLock("FreeStyleServer", messageID, project, layer);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean WLApplyReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            JOptionPane.showMessageDialog(null, "Begin Editing Layer "+jListWL.getSelectedValue()+" ！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
+           
+            //关闭当前界面
+            dispose();
+            
+            main.CurrentLayer=jListWL.getSelectedValue();
+            main.isEditing=true;
+            main.setBtnSaveEditing();
+            
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
+    }
+    
+    public boolean OBApply(String project, String layer) {
+
+        String messageID = mSocket.clientMessageIDPool.getOneRandomID(project);
+        try {
+            TransmittedMessage tm = mSocket.clientMessageCreator.GetLayerWriteLock("FreeStyleServer", messageID, project, layer);
+            mSocket.send(tm.convertMessageToString());
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(FLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean OBApplyReceive(TransmittedMessage tm) {
+        HashMap<String, Object> hm = new HashMap<>();
+        hm = tm.getData();
+        if (hm.get("ReturnMsg").toString().equals("OK")) {
+            JOptionPane.showMessageDialog(null, "Begin Editing Layer "+jListOB.getSelectedValue()+" ！", "FreeStyle", JOptionPane.INFORMATION_MESSAGE);
+           
+            //关闭当前界面
+            dispose();
+            
+            main.CurrentLayer=jListOB.getSelectedValue();
+            //fyn:TODO picture transmission
+          
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null,hm.get("ReturnMsg").toString(), "FreeStyle", JOptionPane.ERROR_MESSAGE);       
+            return false;
+        }
         //fyn：传给服务器申请权限
     }//GEN-LAST:event_btnOBActionPerformed
 
+    
+    /**
+     * StartEditing
+     * 或许传名称并不可行，可以试着传geometrydescription
+     */
+    private void StartEditing(String Layername){
+        
+        main.StartEditing(Layername);
+    }
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    
+    
+        public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -157,11 +264,15 @@ public class ShowLayerStatus extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShowLayerStatus().setVisible(true);
+                try {
+                    new ShowLayerStatus(new Main_win("testID"),"test").setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(ShowLayerStatus.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOB;
     private javax.swing.JButton btnWL;

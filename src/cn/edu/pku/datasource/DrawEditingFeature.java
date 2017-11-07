@@ -23,12 +23,21 @@ import org.geotools.swing.JMapPane;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import com.vividsolutions.jts.io.WKTReader;
 import java.awt.BasicStroke;
+import java.io.File;
 import java.io.IOException;
-import javafx.scene.shape.Polyline;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.scene.text.Font;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureWriter;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFactorySpi;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -85,10 +94,12 @@ public class DrawEditingFeature {
         lastPoint = new Point();
         evtlastPoint = new Point();
         evtnowPoint = new Point();
-        pointsList = new ArrayList<Point>();
-        coordinatesList = new ArrayList<Coordinate>();
+        pointsList = new ArrayList<>();
+        polylines = new ArrayList<>();
+        polygons = new ArrayList<>();
         drawPolygons = new ArrayList<>();
-        type = 2;
+        coordinatesList = new ArrayList<>();
+        type = 0;
         //@create bufferimage
         BufferedImage newCache = new BufferedImage(mapPane.getWidth(), mapPane.getHeight(), BufferedImage.TYPE_INT_ARGB);
         if (cache != null) {
@@ -102,12 +113,12 @@ public class DrawEditingFeature {
     /**
      * 开始编辑
      *
+     * @ 设置编辑的数据类型
      *
-     * @ 设置编辑的数据类型 *
      */
     public void StartEditing(String FeatureType) {
         //todo 重置画布&设置背景
-        CleanBufferImage();
+        Reset();
         if (FeatureType.contains("Point")) {
             type = 0;
         } else if (FeatureType.contains("Line")) {
@@ -122,7 +133,9 @@ public class DrawEditingFeature {
      *
      */
     public void EndEditing() throws IllegalAccessException, InstantiationException, IOException {
-        //CoverNewLayer();
+        CleanBufferImage();
+        CoverNewLayer();
+        Reset();
 
         if (type == 0) {
 
@@ -184,25 +197,17 @@ public class DrawEditingFeature {
     }
 
     /**
-     * @重置编辑状态
+     * @清空画布
      */
-    public void CleanBufferImage() {
-        lastPoint = new Point();
-        evtlastPoint = new Point();
-        evtnowPoint = new Point();
-        pointsList.clear();
-        type = 0;
+    private void CleanBufferImage() {
         BufferedImage newCache = new BufferedImage(drawPane.getWidth(), drawPane.getHeight(), BufferedImage.TYPE_INT_ARGB);
         cache = newCache; //交替缓存
+        Graphics g_orig = drawPane.getGraphics();
+        g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
+        g_orig.drawImage(cache, 0, 0, drawPane);
+        drawPane.repaint();
     }
 
-    /*
-    private void AddCurrentPoint() throws IllegalAccessException, InstantiationException, IOException {
-        Geometry[] geopoints = new Geometry[1];
-        int size = pointsList.size();
-        //geopoints[0] = GeometryManager.createOnePoint(pointsList.get(size - 1).x, pointsList.get(size - 1).y);
-        //SimpleFeatureManager.addGeometriesToLayer(pointLayer, geopoints);
-    }*/
     /**
      * @在画布上添加点
      */
@@ -216,14 +221,13 @@ public class DrawEditingFeature {
             if (drawPane.getMapContent() != null) {
                 ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
                 Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
-                drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
             }
             g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
             g_orig.drawImage(cache, 0, 0, null);
         }
     }
 
-    
     /**
      * @在画布上添加线图层
      */
@@ -248,13 +252,12 @@ public class DrawEditingFeature {
                 if (drawPane.getMapContent() != null) {
                     ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
                     Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
-                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
                 }
                 g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
                 g_orig.drawImage(cache, 0, 0, null);
             }
-        }
-        else{
+        } else {
             if (cache != null && pointsList.size() > 0) {
                 Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图
                 BasicStroke bs = new BasicStroke(8f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
@@ -268,7 +271,7 @@ public class DrawEditingFeature {
                 if (drawPane.getMapContent() != null) {
                     ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
                     Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
-                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
                 }
                 g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
                 g_orig.drawImage(cache, 0, 0, null);
@@ -313,7 +316,7 @@ public class DrawEditingFeature {
                     ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
                     Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
                     //AffineTransform affineTransform=drawPane.getWorldToScreenTransform();
-                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                    drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
                 }
                 g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
                 g_orig.drawImage(cache, 0, 0, null);
@@ -333,12 +336,13 @@ public class DrawEditingFeature {
                 ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
                 Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
                 //AffineTransform affineTransform=drawPane.getWorldToScreenTransform();
-                drawPane.getRenderer().paint((Graphics2D) g, rectangle, mapArea);
+                drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
             }
             g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
             g_orig.drawImage(cache, 0, 0, null);
         }
     }
+
     /**
      * @deprecated
      */
@@ -356,20 +360,85 @@ public class DrawEditingFeature {
         }
     }
 
-    public void CoverNewLayer() {
+    public void CoverNewLayer() throws IllegalAccessException, InstantiationException, IOException {
         int size = drawPane.getMapContent().layers().size() - 1;
         Layer newLayer = drawPane.getMapContent().layers().get(size);
         SimpleFeatureType TYPE = (SimpleFeatureType) newLayer.getFeatureSource().getSchema();
         ListFeatureCollection collection = new ListFeatureCollection(TYPE);
+        SimpleFeatureSource layerSource = null;
+        Style style2 = null;
         //TODO add geometry to collection(simpleFeatureManege Update)
         //Change Style
-        //write shp then read it
-        FeatureLayer layer = new FeatureLayer(collection, null, newLayer.getTitle());
+        switch (type) {
+            case 0:
+
+                break;
+            case 1:
+                
+                break;
+            case 2:
+                 for(int i=0;i<polygons.size();i++)
+                {
+                    
+                    collection.add(SimpleFeatureBuilder.build(TYPE, new Object[]{polygons.get(i), ""}, null));
+                }
+                 /*
+                Map<String, Serializable> params = new HashMap<>();
+                FileDataStoreFactorySpi factory = new org.geotools.data.shapefile.ShapefileDataStoreFactory();
+                params.put(org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP.key, new File("doc\\2.shp").toURI().toURL());
+                ShapefileDataStore ds = (ShapefileDataStore) factory.createNewDataStore(params);
+                ds.createSchema(TYPE);
+                ds.forceSchemaCRS(DefaultGeographicCRS.WGS84);
+                FileDataStore store = FileDataStoreFinder.getDataStore(new File("doc\\2.shp"));
+                layerSource = store.getFeatureSource();
+                SimpleFeatureIterator iterator = layerSource.getFeatures().features();
+                style2 = SLD.createSimpleStyle(layerSource.getSchema());*/
+                //-----------------------------
+                Color color1 = Color.BLUE;
+                Color color2 = Color.YELLOW;
+                style2 = SLD.createPolygonStyle(color1, color2.brighter(), 0.5f);
+                break;
+            default:
+
+                break;
+        }
+        FeatureLayer layer;
+        layer = new FeatureLayer(collection, style2,newLayer.getTitle());
+        /*
+        if (layerSource != null) {
+            layer = new FeatureLayer(layerSource, style2, "new");
+        } else {
+            layer = new FeatureLayer(collection, style2, newLayer.getTitle());
+        }
+         */
         drawPane.getMapContent().removeLayer(newLayer);
         drawPane.getMapContent().addLayer(layer);
-        
-        
+        //layer.setVisible(true);
+        drawPane.repaint();
+
     }
+
+    private void Reset() {
+        lastPoint = new Point();
+        evtlastPoint = new Point();
+        evtnowPoint = new Point();
+        pointsList.clear();
+        polylines.clear();
+        polygons.clear();
+        drawPolygons.clear();
+        coordinatesList.clear();
+        //-----------------------------------------------------------------------------------------------------
+        Graphics2D g = (Graphics2D) cache.getGraphics(); //替换Graphics，转往缓存上画图               
+        Graphics g_orig = drawPane.getGraphics();
+        if (drawPane.getMapContent() != null) {
+            ReferencedEnvelope mapArea = drawPane.getMapContent().getMaxBounds();
+            Rectangle rectangle = new Rectangle(drawPane.getWidth(), drawPane.getHeight());
+            drawPane.getRenderer().paint((Graphics2D) g, rectangle, drawPane.getWorldToScreenTransform());
+        }
+        g_orig.clearRect(0, 0, drawPane.getWidth(), drawPane.getHeight());
+        g_orig.drawImage(cache, 0, 0, null);
+    }
+
     /*
     //TODO clean bitmap
     private void ResetFeatureLayer() throws SchemaException, ParseException, Exception {
